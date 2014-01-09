@@ -33,3 +33,7 @@ Ankh.NoLoad
 #Project files
 [Bb]uild/
 
+#InstallUtil
+*.InstallLog
+*.InstallState
+
