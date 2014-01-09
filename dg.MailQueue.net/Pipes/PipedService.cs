@@ -37,7 +37,7 @@ using System.Net.Mail;
 
 namespace dg.MailQueue
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults = true)]
     public class PipedService : IMailContract, ISettingsContract
     {
 
