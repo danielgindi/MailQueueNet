@@ -106,9 +106,9 @@ namespace dg.MailQueue
                 writer.WriteStartElement("MailMessage");
                 writer.WriteAttributeString("Priority", this.Priority.ToString());
                 writer.WriteAttributeString("IsBodyHtml", this.IsBodyHtml.ToString());
-                if (this.BodyEncoding != null) writer.WriteAttributeString("BodyEncoding", this.BodyEncoding.EncodingName);
-                if (this.HeadersEncoding != null) writer.WriteAttributeString("HeadersEncoding", this.HeadersEncoding.EncodingName);
-                if (this.SubjectEncoding != null) writer.WriteAttributeString("SubjectEncoding", this.SubjectEncoding.EncodingName);
+                if (this.BodyEncoding != null) writer.WriteAttributeString("BodyEncoding", this.BodyEncoding.CodePage.ToString());
+                if (this.HeadersEncoding != null) writer.WriteAttributeString("HeadersEncoding", this.HeadersEncoding.CodePage.ToString());
+                if (this.SubjectEncoding != null) writer.WriteAttributeString("SubjectEncoding", this.SubjectEncoding.CodePage.ToString());
                 writer.WriteAttributeString("DeliveryNotificationOptions", this.DeliveryNotificationOptions.ToString());
 
                 writer.WriteStartElement("From");
@@ -245,9 +245,9 @@ namespace dg.MailQueue
 
             this.IsBodyHtml = Convert.ToBoolean(rootNode.Attributes["IsBodyHtml"].Value);
             this.Priority = (MailPriority)Enum.Parse(typeof(MailPriority), rootNode.Attributes["Priority"].Value);
-            if (rootNode.Attributes["BodyEncoding"] != null) this.BodyEncoding = Encoding.GetEncoding(rootNode.Attributes["BodyEncoding"].Value);
-            if (rootNode.Attributes["HeadersEncoding"] != null) this.HeadersEncoding = Encoding.GetEncoding(rootNode.Attributes["HeadersEncoding"].Value);
-            if (rootNode.Attributes["SubjectEncoding"] != null) this.SubjectEncoding = Encoding.GetEncoding(rootNode.Attributes["SubjectEncoding"].Value);
+            if (rootNode.Attributes["BodyEncoding"] != null) this.BodyEncoding = Encoding.GetEncoding(Convert.ToInt32(rootNode.Attributes["BodyEncoding"].Value));
+            if (rootNode.Attributes["HeadersEncoding"] != null) this.HeadersEncoding = Encoding.GetEncoding(Convert.ToInt32(rootNode.Attributes["HeadersEncoding"].Value));
+            if (rootNode.Attributes["SubjectEncoding"] != null) this.SubjectEncoding = Encoding.GetEncoding(Convert.ToInt32(rootNode.Attributes["SubjectEncoding"].Value));
             this.DeliveryNotificationOptions = (DeliveryNotificationOptions)Enum.Parse(typeof(DeliveryNotificationOptions), rootNode.Attributes["DeliveryNotificationOptions"].Value);
 
             string displayName;
