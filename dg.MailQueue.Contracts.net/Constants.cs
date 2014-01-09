@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     public static class Constants
     {

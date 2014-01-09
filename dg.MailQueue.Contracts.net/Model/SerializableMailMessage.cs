@@ -38,7 +38,7 @@ using System.Xml.Serialization;
 using System.Globalization;
 using System.Xml.Schema;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     [XmlRoot(ElementName = "SerializableMailMessage")]
     public class SerializableMailMessage : MailMessage, IXmlSerializable

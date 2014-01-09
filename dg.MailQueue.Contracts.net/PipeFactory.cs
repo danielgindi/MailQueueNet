@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ServiceModel;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     public static class PipeFactory
     {

@@ -40,7 +40,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     public class Coordinator
     {
@@ -111,8 +111,15 @@ namespace dg.MailQueue.net
                     try { queuePath = Files.MapPath(queuePath); }
                     catch { }
 
-                    _fileNameList = new List<string>(Directory.GetFiles(queuePath, "*.mail"));
-                    _fileNameList.Sort();
+                    try
+                    {
+                        _fileNameList = new List<string>(Directory.GetFiles(queuePath, "*.mail"));
+                        _fileNameList.Sort();
+                    }
+                    catch
+                    {
+                        // Your QUEUE folder is inaccessible...
+                    }
                 }
 
                 while (_fileNameList.Count > 0 && (nextFileName == null || _sendingFileNames.ContainsKey(nextFileName)))

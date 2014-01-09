@@ -8,7 +8,7 @@
     <ProjectGuid>{F2750AB7-3FF9-43EE-BF9C-4443A6BA092C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>dg.MailQueue.Contracts.net</RootNamespace>
+    <RootNamespace>dg.MailQueue.Contracts</RootNamespace>
     <AssemblyName>dg.MailQueue.Contracts.net</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>

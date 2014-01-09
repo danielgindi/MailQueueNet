@@ -32,17 +32,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using dg.MailQueue.net;
+using dg.MailQueue;
 using System.Threading;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     public class Program
     {
         static MailQueueService service;
         static void Main(string[] args)
         {
-            bool IsServiceMode = args.Length == 0;
+            bool IsServiceMode = args.Length == 0 || args[0] != "console";
 
             service = new MailQueueService();
 

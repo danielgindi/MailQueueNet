@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace dg.MailQueue.net.Properties {
+namespace dg.MailQueue.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

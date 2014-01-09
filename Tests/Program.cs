@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.ServiceModel;
-using dg.MailQueue.net;
+using dg.MailQueue;
 using System.Net.Mail;
 using System.Threading;
 

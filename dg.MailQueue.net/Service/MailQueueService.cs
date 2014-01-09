@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ServiceModel;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     public class MailQueueService : System.ServiceProcess.ServiceBase
     {
@@ -45,6 +45,8 @@ namespace dg.MailQueue.net
 
         protected override void OnStart(string[] args)
         {
+            // System.Diagnostics.Debugger.Launch(); // <-- for debugging the Service
+
             OpenSettingsNamedPipe();
             Coordinator.SharedInstance.Start();
 

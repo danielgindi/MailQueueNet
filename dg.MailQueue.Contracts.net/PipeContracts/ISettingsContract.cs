@@ -35,7 +35,7 @@ using System.Text;
 using System.ServiceModel;
 using System.Net.Mail;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     [ServiceContract]
     public interface ISettingsContract

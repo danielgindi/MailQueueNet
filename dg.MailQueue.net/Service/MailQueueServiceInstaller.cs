@@ -35,7 +35,7 @@ using System.Text;
 using System.ComponentModel;
 using System.ServiceProcess;
 
-namespace dg.MailQueue.net
+namespace dg.MailQueue
 {
     [RunInstaller(true)]
     public class MailQueueServiceInstaller : System.Configuration.Install.Installer

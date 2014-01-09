@@ -8,7 +8,7 @@
     <ProjectGuid>{0283E429-85FB-4874-9E32-F16521C091B1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>dg.MailQueue.net</RootNamespace>
+    <RootNamespace>dg.MailQueue</RootNamespace>
     <AssemblyName>dg.MailQueue.net</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
