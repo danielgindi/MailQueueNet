@@ -6,7 +6,7 @@ so you can prevent blockingg your app when sending those out.
 
 ## Installation:
 * Copy the files from dg.MailQueue.net/Release folder, to where you want your service to be.
-* Create a folder for queued and failed emails, with sufficient permissions. By default the service will look for "./queue" and "./failed" in the exe's folder.
+* Create a folder for queued and failed emails, with sufficient permissions. By default the service will look for "./mail/queue" and "./mail/failed" in the exe's folder.
 * Now you can define basic configurations in dg.MailQueue.net.exe.config, or do them later from code.
 * Use `installutil.exe dg.MailQueue.net.exe` to install the service. `installutil` is in .NET's folder (i.e. %SYSTEMROOT%\Microsoft.NET\Framework\v4.0.30319
 * If you get an *0x80131515* error, then go to the properties of the *dg.MailQueue.net.exe*, and click on "Unblock". (Windows Server may recognized that the file was downloaded, and block it automatically).
