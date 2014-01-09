@@ -64,6 +64,27 @@ namespace dg.MailQueue.net
             Coordinator.AddMail(mailMessage);
         }
 
+        public void QueueMessageNonBlocking(SerializableMailMessage mailMessage)
+        {
+            if (mailMessage == null) return;
+
+            Coordinator.AddMail(mailMessage);
+        }
+
+        public void QueueMessageWithSmtpSettingsNonBlocking(SerializableMailMessage mailMessage, string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
+        {
+            if (mailMessage == null) return;
+
+            mailMessage.SmtpServer = smtpServer;
+            mailMessage.SmtpPort = port;
+            mailMessage.RequiresSsl = ssl;
+            mailMessage.RequiresAuthentication = authenticate;
+            mailMessage.Username = username;
+            mailMessage.Password = password;
+
+            Coordinator.AddMail(mailMessage);
+        }
+
         #endregion
 
         #region ISettingsContract
