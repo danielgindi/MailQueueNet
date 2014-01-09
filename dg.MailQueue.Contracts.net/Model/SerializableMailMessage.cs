@@ -227,7 +227,7 @@ namespace dg.MailQueue
 
                 writer.WriteStartElement("Smtp");
                 if (this.SmtpServer != null) writer.WriteAttributeString("SmtpServer", this.SmtpServer.ToString());
-                if (this.SmtpPort > 0) writer.WriteAttributeString("SmtpPort", this.RequiresSsl.ToString(CultureInfo.InvariantCulture));
+                if (this.SmtpPort > 0) writer.WriteAttributeString("SmtpPort", this.SmtpPort.ToString());
                 writer.WriteAttributeString("RequiresSsl", this.RequiresSsl.ToString());
                 writer.WriteAttributeString("RequiresAuthentication", this.RequiresAuthentication.ToString());
                 if (this.Username != null) writer.WriteAttributeString("Username", this.Username.ToString());
