@@ -46,16 +46,31 @@ namespace dg.MailQueue
         [OperationContract(IsOneWay = true)]
         void SetQueueFolder(string path);
 
+        [OperationContract]
+        string GetQueueFolder();
+
         [OperationContract(IsOneWay = true)]
         void SetFailedFolder(string path);
+
+        [OperationContract]
+        string GetFailedFolder();
 
         [OperationContract(IsOneWay = true)]
         void SetMaximumFailureRetries(int maximumFailureRetries);
 
+        [OperationContract]
+        int GetMaximumFailureRetries();
+
         [OperationContract(IsOneWay = true)]
         void SetSecondsBetweenRetryRounds(int secondsBetweenRetryRounds);
 
+        [OperationContract]
+        int GetSecondsBetweenRetryRounds();
+
         [OperationContract(IsOneWay = true)]
         void SetMaximumConcurrentWorkers(int maximumConcurrentWorkers);
+
+        [OperationContract]
+        int GetMaximumConcurrentWorkers();
     }
 }

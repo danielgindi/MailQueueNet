@@ -106,10 +106,20 @@ namespace dg.MailQueue
             Properties.Settings.Default.Save();
         }
 
+        public string GetQueueFolder()
+        {
+            return Properties.Settings.Default.QueueFolder;
+        }
+
         public void SetFailedFolder(string path)
         {
             Properties.Settings.Default.FailedFolder = path;
             Properties.Settings.Default.Save();
+        }
+
+        public string GetFailedFolder()
+        {
+            return Properties.Settings.Default.FailedFolder;
         }
 
         public void SetMaximumFailureRetries(int maximumFailureRetries)
@@ -118,16 +128,31 @@ namespace dg.MailQueue
             Properties.Settings.Default.Save();
         }
 
+        public int GetMaximumFailureRetries()
+        {
+            return Properties.Settings.Default.MaximumFailureRetries;
+        }
+
         public void SetSecondsBetweenRetryRounds(int secondsBetweenRetryRounds)
         {
             Properties.Settings.Default.SecondsBetweenRetryRounds = secondsBetweenRetryRounds;
             Properties.Settings.Default.Save();
         }
 
+        public int GetSecondsBetweenRetryRounds()
+        {
+            return Properties.Settings.Default.SecondsBetweenRetryRounds;
+        }
+
         public void SetMaximumConcurrentWorkers(int maximumConcurrentWorkers)
         {
             Properties.Settings.Default.MaximumConcurrentWorkers = maximumConcurrentWorkers;
             Properties.Settings.Default.Save();
+        }
+
+        public int GetMaximumConcurrentWorkers()
+        {
+            return Properties.Settings.Default.MaximumConcurrentWorkers;
         }
 
         #endregion
