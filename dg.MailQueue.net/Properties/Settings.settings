@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="dg.MailQueue.net.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="dg.MailQueue.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="QueueFolder" Type="System.String" Scope="User">
@@ -31,9 +31,6 @@
     </Setting>
     <Setting Name="SmtpAuthentication" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="_LastMailId" Type="System.UInt64" Scope="User">
-      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MaximumConcurrentWorkers" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">4</Value>

@@ -145,18 +145,6 @@ namespace dg.MailQueue.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public ulong _LastMailId {
-            get {
-                return ((ulong)(this["_LastMailId"]));
-            }
-            set {
-                this["_LastMailId"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public int MaximumConcurrentWorkers {
             get {

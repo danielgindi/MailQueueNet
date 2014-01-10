@@ -329,7 +329,8 @@ namespace dg.MailQueue
                 }
             }
         }
-        
+
+        private static int mailIdCounter = 1;
         public static void AddMail(SerializableMailMessage message)
         {
             string tempPath = Files.CreateEmptyTempFile();
@@ -340,12 +341,11 @@ namespace dg.MailQueue
                 catch { }
 
                 bool success = false;
-                string file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + Properties.Settings.Default._LastMailId.ToString().PadLeft(8, '0') + @".mail");
+                string file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + mailIdCounter.ToString().PadLeft(8, '0') + @".mail");
                 while (File.Exists(file))
                 {
-                    Properties.Settings.Default._LastMailId++;
-                    Properties.Settings.Default.Save();
-                    file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + Properties.Settings.Default._LastMailId.ToString().PadLeft(8, '0') + @".mail");
+                    mailIdCounter++;
+                    file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + mailIdCounter.ToString().PadLeft(8, '0') + @".mail");
 
                     try
                     {
