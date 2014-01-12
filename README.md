@@ -2,7 +2,7 @@ dg.MailQueue.net
 ================
 
 This is a .NET service that queues .NET's MailMessage objects to go out in the background, 
-so you can prevent blockingg your app when sending those out.
+so you can prevent blocking your app when sending those out.
 
 ## Installation:
 * Copy the files from dg.MailQueue.net/Release folder, to where you want your service to be.
