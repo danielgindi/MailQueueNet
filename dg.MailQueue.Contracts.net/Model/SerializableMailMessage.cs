@@ -37,6 +37,8 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Globalization;
 using System.Xml.Schema;
+using System.IO;
+using System.Net.Mime;
 
 namespace dg.MailQueue
 {
@@ -61,6 +63,11 @@ namespace dg.MailQueue
             SubjectEncoding = mailMessage.SubjectEncoding;
             Headers.Add(mailMessage.Headers);
 
+            foreach (var attachment in mailMessage.Attachments)
+            {
+                Attachments.Add(attachment);
+            }
+
             foreach (MailAddress address in mailMessage.To)
             {
                 To.Add(address);
@@ -78,6 +85,16 @@ namespace dg.MailQueue
                 ReplyToList.Add(address);
             }
         }
+
+        public static bool Serializable(MailMessage message)
+        {
+            foreach (var attachment in message.Attachments)
+            {
+                if (!(attachment.ContentStream is FileStream)) return false;
+            }
+            return true;
+        }
+
         public string SmtpServer { get; set; }
         public int SmtpPort { get; set; }
         public bool RequiresSsl { get; set; }
@@ -210,6 +227,41 @@ namespace dg.MailQueue
                         writer.WriteStartElement("Header");
                         writer.WriteAttributeString("Key", key);
                         writer.WriteRaw(this.Headers[key]);
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement();
+                }
+
+                if (this.Attachments.Count > 0)
+                {
+                    writer.WriteStartElement("Attachments");
+                    foreach (var attachment in this.Attachments)
+                    {
+                        var stream = attachment.ContentStream as FileStream;
+                        if (stream == null) return;
+
+                        writer.WriteStartElement("Attachment");
+                        if (stream.Name != null)
+                        {
+                            writer.WriteAttributeString("FileName", stream.Name);
+                        }
+                        if (attachment.Name != null)
+                        {
+                            writer.WriteAttributeString("Name", attachment.Name);
+                        }
+                        if (attachment.NameEncoding != null)
+                        {
+                            writer.WriteAttributeString("NameEncoding", attachment.NameEncoding.EncodingName);
+                        }
+                        if (attachment.ContentId != null)
+                        {
+                            writer.WriteAttributeString("ContentId", attachment.ContentId);
+                        }
+                        if (attachment.ContentType != null)
+                        {
+                            writer.WriteAttributeString("ContentType", attachment.ContentType.MediaType);
+                        }
+                        writer.WriteAttributeString("TransferEncoding", attachment.TransferEncoding.ToString());
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement();
@@ -348,6 +400,37 @@ namespace dg.MailQueue
                 foreach (XmlNode node in headersNode.ChildNodes)
                 {
                     this.Headers.Add(node.Attributes["Key"].Value, node.InnerText);
+                }
+            }
+
+            XmlNode attachmentsNode = GetConfigNode(xml, "MailMessage/Attachments");
+            if (attachmentsNode != null)
+            {
+                foreach (XmlNode node in attachmentsNode.ChildNodes)
+                {
+                    var attachment = new Attachment(node.Attributes["FileName"].Value);
+                    if (node.Attributes["Name"] != null)
+                    {
+                        attachment.Name = node.Attributes["Name"].Value;
+                    }
+                    if (node.Attributes["NameEncoding"] != null)
+                    {
+                        attachment.NameEncoding = Encoding.GetEncoding(node.Attributes["NameEncoding"].Value);
+                    }
+                    if (node.Attributes["ContentId"] != null)
+                    {
+                        attachment.ContentId = node.Attributes["ContentId"].Value;
+                    }
+                    if (node.Attributes["ContentType"] != null)
+                    {
+                        attachment.ContentType = new ContentType(node.Attributes["ContentType"].Value);
+                    }
+                    if (node.Attributes["TransferEncoding"] != null)
+                    {
+                        attachment.TransferEncoding = (TransferEncoding)Enum.Parse(typeof(TransferEncoding), node.Attributes["TransferEncoding"].Value);
+                    }
+
+                    this.Attachments.Add(attachment);
                 }
             }
 
