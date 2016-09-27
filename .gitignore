@@ -27,6 +27,8 @@ ipch/
 obj/
 [Dd]ebug*/
 _Debug/
+[Rr]elease*/
+_Release/
 Ankh.NoLoad
 
 #Project files
