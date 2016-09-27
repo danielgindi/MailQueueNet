@@ -140,11 +140,12 @@ namespace dg.MailQueue
                 {
                     lock (_actionMonitor)
                     {
-                        Monitor.Wait(_actionMonitor, settings.SecondsBetweenRetryRounds * 1000);
+                        Monitor.Wait(_actionMonitor, (int)(settings.SecondsBetweenRetryRounds * 1000f));
                     }
                 }
             }
 
+            // Wait for all workers to finish
             while (_concurrentWorkers > 0)
             {
                 lock (_actionMonitor)

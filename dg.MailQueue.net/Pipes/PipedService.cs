@@ -133,13 +133,13 @@ namespace dg.MailQueue
             return Properties.Settings.Default.MaximumFailureRetries;
         }
 
-        public void SetSecondsBetweenRetryRounds(int secondsBetweenRetryRounds)
+        public void SetSecondsBetweenRetryRounds(float secondsBetweenRetryRounds)
         {
             Properties.Settings.Default.SecondsBetweenRetryRounds = secondsBetweenRetryRounds;
             Properties.Settings.Default.Save();
         }
 
-        public int GetSecondsBetweenRetryRounds()
+        public float GetSecondsBetweenRetryRounds()
         {
             return Properties.Settings.Default.SecondsBetweenRetryRounds;
         }

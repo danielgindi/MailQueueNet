@@ -62,10 +62,10 @@ namespace dg.MailQueue
         int GetMaximumFailureRetries();
 
         [OperationContract(IsOneWay = true)]
-        void SetSecondsBetweenRetryRounds(int secondsBetweenRetryRounds);
+        void SetSecondsBetweenRetryRounds(float secondsBetweenRetryRounds);
 
         [OperationContract]
-        int GetSecondsBetweenRetryRounds();
+        float GetSecondsBetweenRetryRounds();
 
         [OperationContract(IsOneWay = true)]
         void SetMaximumConcurrentWorkers(int maximumConcurrentWorkers);

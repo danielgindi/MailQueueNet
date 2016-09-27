@@ -11,8 +11,8 @@
     <Setting Name="MaximumFailureRetries" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="SecondsBetweenRetryRounds" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">60</Value>
+    <Setting Name="SecondsBetweenRetryRounds" Type="System.Single" Scope="User">
     </Setting>
     <Setting Name="SmtpServer" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

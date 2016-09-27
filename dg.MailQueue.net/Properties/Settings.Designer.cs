@@ -61,10 +61,10 @@ namespace dg.MailQueue.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("60")]
-        public int SecondsBetweenRetryRounds {
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public float SecondsBetweenRetryRounds {
             get {
-                return ((int)(this["SecondsBetweenRetryRounds"]));
+                return ((float)(this["SecondsBetweenRetryRounds"]));
             }
             set {
                 this["SecondsBetweenRetryRounds"] = value;
