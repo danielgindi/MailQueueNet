@@ -132,21 +132,25 @@ namespace dg.MailQueue
                 {
                     _sendingFileNames[nextFileName] = true;
 
-                    Interlocked.Increment(ref _concurrentWorkers);
-                    SendMailAsync(nextFileName);
+                    var task = SendMailAsync(nextFileName);
                 }
 
-                if (_fileNameList.Count == 0 || (_concurrentWorkers >= settings.MaximumConcurrentWorkers && settings.MaximumConcurrentWorkers > 0))
+                if (_fileNameList.Count == 0 
+                    || (_concurrentWorkers >= settings.MaximumConcurrentWorkers && settings.MaximumConcurrentWorkers > 0))
                 {
                     lock (_actionMonitor)
+                    {
                         Monitor.Wait(_actionMonitor, settings.SecondsBetweenRetryRounds * 1000);
+                    }
                 }
             }
 
             while (_concurrentWorkers > 0)
             {
                 lock (_actionMonitor)
+                {
                     Monitor.Wait(_actionMonitor, 1000);
+                }
             }
 
             lock (_stopLock)
@@ -160,67 +164,69 @@ namespace dg.MailQueue
 
         #region Worker task
 
-        private Task SendMailAsync(string fileName)
+        private async Task SendMailAsync(string fileName)
         {
-            return Task.Factory.StartNew(() =>
+            try
             {
-                try
+                SerializableMailMessage message = ReadMailFromFile(fileName);
+
+                string hostName = message.SmtpServer;
+                int port = message.SmtpPort;
+                bool ssl = message.RequiresSsl;
+                bool auth = message.RequiresAuthentication;
+                string username = message.Username;
+                string password = message.Password;
+
+                if (string.IsNullOrEmpty(hostName))
                 {
-                    SerializableMailMessage message = ReadMailFromFile(fileName);
+                    Properties.Settings settings = Properties.Settings.Default;
+                    hostName = settings.SmtpServer;
+                    port = settings.SmtpPort;
+                    ssl = settings.SmtpSsl;
+                    auth = settings.SmtpAuthentication;
+                    username = settings.SmtpUsername;
+                    password = settings.SmtpPassword;
+                }
 
-                    string hostName = message.SmtpServer;
-                    int port = message.SmtpPort;
-                    bool ssl = message.RequiresSsl;
-                    bool auth = message.RequiresAuthentication;
-                    string username = message.Username;
-                    string password = message.Password;
+                if (string.IsNullOrEmpty(hostName))
+                {
+                    MarkSkipped(fileName);
+                }
+                else
+                {
+                    Interlocked.Increment(ref _concurrentWorkers);
 
-                    if (string.IsNullOrEmpty(hostName))
+                    using (SmtpClient smtp = new SmtpClient())
                     {
-                        Properties.Settings settings = Properties.Settings.Default;
-                        hostName = settings.SmtpServer;
-                        port = settings.SmtpPort;
-                        ssl = settings.SmtpSsl;
-                        auth = settings.SmtpAuthentication;
-                        username = settings.SmtpUsername;
-                        password = settings.SmtpPassword;
-                    }
-
-                    if (string.IsNullOrEmpty(hostName))
-                    {
-                        MarkSkipped(fileName);
-                    }
-                    else
-                    {
-                        using (SmtpClient smtp = new SmtpClient())
+                        smtp.Host = hostName.Trim();
+                        if (port > 0)
                         {
-                            smtp.Host = hostName.Trim();
-                            if (port > 0)
-                            {
-                                smtp.Port = port;
-                            }
-
-                            if (auth) smtp.Credentials = new System.Net.NetworkCredential(username, password);
-                            smtp.EnableSsl = ssl;
-
-                            smtp.Timeout = Properties.Settings.Default.SmtpConnectionTimeout;
-                            smtp.Send(message);
-
-                            MarkSent(fileName);
+                            smtp.Port = port;
                         }
-                    }
-                }
-                catch
-                {
-                    try { MarkFailed(fileName); }
-                    catch { }
-                }
 
-                // Task ended, decrement counter and pulse to the Coordinator thread
-                Interlocked.Decrement(ref _concurrentWorkers);
-                lock (_actionMonitor)
-                    Monitor.Pulse(_actionMonitor);
-            });
+                        if (auth) smtp.Credentials = new System.Net.NetworkCredential(username, password);
+                        smtp.EnableSsl = ssl;
+
+                        smtp.Timeout = Properties.Settings.Default.SmtpConnectionTimeout;
+
+                        await smtp.SendMailAsync(message);
+                    }
+
+                    // Task ended, decrement counter and pulse to the Coordinator thread
+                    Interlocked.Decrement(ref _concurrentWorkers);
+                    lock (_actionMonitor)
+                    {
+                        Monitor.Pulse(_actionMonitor);
+                    }
+
+                    MarkSent(fileName);
+                }
+            }
+            catch
+            {
+                try { MarkFailed(fileName); }
+                catch { }
+            }
         }
 
         private void MarkFailed(string fileName)
@@ -271,7 +277,9 @@ namespace dg.MailQueue
                 }
 
                 lock (_failedFnLock)
+                {
                     _failedFileNameCounter.Remove(fileName);
+                }
             }
 
             bool wasSending;
@@ -312,8 +320,11 @@ namespace dg.MailQueue
             {
                 if (_stopped || _stopping) return;
                 _stopping = true;
+
                 lock (_actionMonitor)
+                {
                     Monitor.Pulse(_actionMonitor);
+                }
             }
         }
 
@@ -390,7 +401,9 @@ namespace dg.MailQueue
         public void ContinueSendingEmails()
         {
             lock (_actionMonitor)
+            {
                 Monitor.Pulse(_actionMonitor);
+            }
         }
 
         #endregion
