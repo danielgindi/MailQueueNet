@@ -45,7 +45,9 @@ namespace dg.MailQueue
 
         protected override void OnStart(string[] args)
         {
-            // System.Diagnostics.Debugger.Launch(); // <-- for debugging the Service
+#if DEBUG
+            System.Diagnostics.Debugger.Launch();
+#endif
 
             OpenSettingsNamedPipe();
             Coordinator.SharedInstance.Start();
@@ -55,6 +57,7 @@ namespace dg.MailQueue
 
         protected override void OnStop()
         {
+            Coordinator.SharedInstance.Stop();
 
             base.OnStop();
         }
