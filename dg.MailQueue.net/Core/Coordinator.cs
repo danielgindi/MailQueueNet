@@ -122,10 +122,22 @@ namespace dg.MailQueue
                     }
                 }
 
-                while (_fileNameList.Count > 0 && (nextFileName == null || _sendingFileNames.ContainsKey(nextFileName)))
+                while ((nextFileName == null && _fileNameList.Count > 0) || 
+                    (nextFileName != null && _sendingFileNames.ContainsKey(nextFileName)))
                 {
-                    nextFileName = _fileNameList[0];
-                    _fileNameList.RemoveAt(0);
+                    if (nextFileName != null)
+                    {
+                        _fileNameList.RemoveAt(0);
+                    }
+
+                    if (_fileNameList.Count > 0)
+                    {
+                        nextFileName = _fileNameList[0];
+                    }
+                    else
+                    {
+                        nextFileName = null;
+                    }
                 }
 
                 if (nextFileName != null)
