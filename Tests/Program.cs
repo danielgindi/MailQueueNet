@@ -18,10 +18,10 @@ namespace Tests
             IMailContract mailChannel = PipeFactory.NewMailChannel();
 
             settingsChannel.SetSmtpSettings("smtp.gmail.com", 587, true, true, "[test email account here]", "[test password here]");
-            settingsChannel.SetQueueFolder("C:\\queued");
-            settingsChannel.SetFailedFolder("C:\\failed");
+            // settingsChannel.SetQueueFolder("C:\\mail\queued");
+            // settingsChannel.SetFailedFolder("C:\\mail\failed");
 
-            for (int counter = 1; counter < 100; counter++)
+            /*for (int counter = 1; counter < 100; counter++)
             {
                 MailMessage message = new MailMessage();
                 message.To.Add(new MailAddress(@"to.test@gmail.com", "Test dg.MailQueue.net account"));
@@ -39,7 +39,7 @@ namespace Tests
                     // A supposed success
                     mailChannel.QueueMessage(new SerializableMailMessage(message));
                 }
-            }
+            }*/
         }
     }
 }
