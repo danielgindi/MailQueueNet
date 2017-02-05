@@ -102,9 +102,7 @@ namespace dg.MailQueue
                 if (ShouldStop()) break;
 
                 if (_concurrentWorkers >= settings.MaximumConcurrentWorkers && settings.MaximumConcurrentWorkers > 0) continue; // Wait until a worker is being freed
-
-                string nextFileName = null;
-
+                
                 if (_fileNameList.Count == 0)
                 {
                     string queuePath = settings.QueueFolder;
@@ -122,24 +120,20 @@ namespace dg.MailQueue
                     }
                 }
 
-                while ((nextFileName == null && _fileNameList.Count > 0) || 
-                    (nextFileName != null && _sendingFileNames.ContainsKey(nextFileName)))
+                string nextFileName = null;
+                for (var i = 0; i < _fileNameList.Count && nextFileName == null; i++)
                 {
-                    if (nextFileName != null)
+                    nextFileName = _fileNameList[i];
+
+                    if (!_sendingFileNames.ContainsKey(nextFileName))
                     {
-                        _fileNameList.RemoveAt(0);
+                        _fileNameList.RemoveAt(i);
+                        break;
                     }
 
-                    if (_fileNameList.Count > 0)
-                    {
-                        nextFileName = _fileNameList[0];
-                    }
-                    else
-                    {
-                        nextFileName = null;
-                    }
+                    nextFileName = null;
                 }
-
+                
                 if (nextFileName != null)
                 {
                     _sendingFileNames[nextFileName] = true;
