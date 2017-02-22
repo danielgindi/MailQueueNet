@@ -132,16 +132,16 @@ namespace dg.MailQueue
         {
             return Properties.Settings.Default.MaximumFailureRetries;
         }
-
-        public void SetSecondsBetweenRetryRounds(float secondsBetweenRetryRounds)
+        
+        public void SetSecondsUntilFolderRefresh(float secondsUntilFolderRefresh)
         {
-            Properties.Settings.Default.SecondsBetweenRetryRounds = secondsBetweenRetryRounds;
+            Properties.Settings.Default.SecondsUntilFolderRefresh = secondsUntilFolderRefresh;
             Properties.Settings.Default.Save();
         }
 
-        public float GetSecondsBetweenRetryRounds()
+        public float GetSecondsUntilFolderRefresh()
         {
-            return Properties.Settings.Default.SecondsBetweenRetryRounds;
+            return Properties.Settings.Default.SecondsUntilFolderRefresh;
         }
 
         public void SetMaximumConcurrentWorkers(int maximumConcurrentWorkers)

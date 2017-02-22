@@ -61,18 +61,6 @@ namespace dg.MailQueue.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public float SecondsBetweenRetryRounds {
-            get {
-                return ((float)(this["SecondsBetweenRetryRounds"]));
-            }
-            set {
-                this["SecondsBetweenRetryRounds"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string SmtpServer {
             get {
@@ -164,6 +152,18 @@ namespace dg.MailQueue.Properties {
             }
             set {
                 this["SmtpConnectionTimeout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public float SecondsUntilFolderRefresh {
+            get {
+                return ((float)(this["SecondsUntilFolderRefresh"]));
+            }
+            set {
+                this["SecondsUntilFolderRefresh"] = value;
             }
         }
     }

@@ -11,9 +11,6 @@
     <Setting Name="MaximumFailureRetries" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="SecondsBetweenRetryRounds" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
     <Setting Name="SmtpServer" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -37,6 +34,9 @@
     </Setting>
     <Setting Name="SmtpConnectionTimeout" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100000</Value>
+    </Setting>
+    <Setting Name="SecondsUntilFolderRefresh" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">10</Value>
     </Setting>
   </Settings>
 </SettingsFile>

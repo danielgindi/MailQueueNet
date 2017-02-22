@@ -91,8 +91,6 @@ namespace dg.MailQueue
 
         private void Run()
         {
-            Properties.Settings settings = Properties.Settings.Default;
-
             _fileNameList = new List<string>();
             _sendingFileNames = new ConcurrentDictionary<string, bool>();
             _failedFileNameCounter = new Dictionary<string, int>();
@@ -101,11 +99,21 @@ namespace dg.MailQueue
             {
                 if (ShouldStop()) break;
 
-                if (_concurrentWorkers >= settings.MaximumConcurrentWorkers && settings.MaximumConcurrentWorkers > 0) continue; // Wait until a worker is being freed
+                while (!IsThereAFreeWorker)
+                {
+                    lock (_actionMonitor)
+                    {
+                        // Did the looping condition change by now?
+                        if (IsThereAFreeWorker) break;
+
+                        // Lock for an hour. Any mail sent or worker getting freed, will release it.
+                        Monitor.Wait(_actionMonitor, 60 * 60 * 1000);
+                    }
+                }
                 
                 if (_fileNameList.Count == 0)
                 {
-                    string queuePath = settings.QueueFolder;
+                    string queuePath = Properties.Settings.Default.QueueFolder;
                     try { queuePath = Files.MapPath(queuePath); }
                     catch { }
 
@@ -120,18 +128,23 @@ namespace dg.MailQueue
                     }
                 }
 
-                string nextFileName = null;
-                for (var i = 0; i < _fileNameList.Count && nextFileName == null; i++)
+                if (_fileNameList.Count == 0)
                 {
-                    nextFileName = _fileNameList[i];
-
-                    if (!_sendingFileNames.ContainsKey(nextFileName))
+                    lock (_actionMonitor)
                     {
+                        Monitor.Wait(_actionMonitor, (int)(Properties.Settings.Default.SecondsUntilFolderRefresh * 1000f));
+                    }
+                }
+
+                string nextFileName = null;
+                for (var i = 0; i < _fileNameList.Count; i++)
+                {
+                    if (!_sendingFileNames.ContainsKey(_fileNameList[i]))
+                    {
+                        nextFileName = _fileNameList[i];
                         _fileNameList.RemoveAt(i);
                         break;
                     }
-
-                    nextFileName = null;
                 }
                 
                 if (nextFileName != null)
@@ -139,15 +152,6 @@ namespace dg.MailQueue
                     _sendingFileNames[nextFileName] = true;
 
                     var task = SendMailAsync(nextFileName);
-                }
-
-                if (_fileNameList.Count == 0 
-                    || (_concurrentWorkers >= settings.MaximumConcurrentWorkers && settings.MaximumConcurrentWorkers > 0))
-                {
-                    lock (_actionMonitor)
-                    {
-                        Monitor.Wait(_actionMonitor, (int)(settings.SecondsBetweenRetryRounds * 1000f));
-                    }
                 }
             }
 
@@ -170,6 +174,16 @@ namespace dg.MailQueue
         #endregion
 
         #region Worker task
+
+        public bool IsThereAFreeWorker
+        {
+            get
+            {
+                var settings = Properties.Settings.Default;
+                return settings.MaximumConcurrentWorkers <= 0 ||
+                    _concurrentWorkers < settings.MaximumConcurrentWorkers;
+            }
+        }
 
         private async Task SendMailAsync(string fileName)
         {
