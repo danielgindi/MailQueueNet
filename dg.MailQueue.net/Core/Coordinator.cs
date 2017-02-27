@@ -189,6 +189,8 @@ namespace dg.MailQueue
 
         private async Task SendMailAsync(string fileName)
         {
+            bool workerInUse = false;
+
             try
             {
                 SerializableMailMessage message = ReadMailFromFile(fileName);
@@ -218,6 +220,7 @@ namespace dg.MailQueue
                 else
                 {
                     Interlocked.Increment(ref _concurrentWorkers);
+                    workerInUse = true;
 
                     using (SmtpClient smtp = new SmtpClient())
                     {
@@ -237,6 +240,8 @@ namespace dg.MailQueue
 
                     // Task ended, decrement counter and pulse to the Coordinator thread
                     Interlocked.Decrement(ref _concurrentWorkers);
+                    workerInUse = false;
+
                     lock (_actionMonitor)
                     {
                         Monitor.Pulse(_actionMonitor);
@@ -247,6 +252,12 @@ namespace dg.MailQueue
             }
             catch
             {
+                if (workerInUse)
+                {
+                    // Decrement counter and pulse to the Coordinator thread
+                    Interlocked.Decrement(ref _concurrentWorkers);
+                }
+
                 try { MarkFailed(fileName); }
                 catch { }
             }
