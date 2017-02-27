@@ -198,6 +198,20 @@ namespace dg.MailQueue
 
                     var task = SendMailAsync(nextFileName);
                 }
+                else
+                {
+                    lock (_actionMonitor)
+                    {
+                        if (ShouldStop()) break;
+
+                        if (ConsoleLogEnabled)
+                        {
+                            Console.WriteLine("Waiting for changes in the queue or workers...");
+                        }
+
+                        Monitor.Wait(_actionMonitor, (int)(1 * 1000f));
+                    }
+                }
             }
 
             // Wait for all workers to finish
