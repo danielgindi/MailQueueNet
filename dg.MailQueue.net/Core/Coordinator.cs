@@ -51,6 +51,7 @@ namespace dg.MailQueue
         }
 
         public bool ConsoleLogEnabled { get; set; } = false;
+        public bool ConsoleLogExceptions { get; set; } = false;
 
         #region Singleton
 
@@ -312,11 +313,15 @@ namespace dg.MailQueue
                             smtp.Port = port;
                         }
 
-                        if (auth) smtp.Credentials = new System.Net.NetworkCredential(username, password);
+                        if (auth)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(username, password);
+                        }
+
                         smtp.EnableSsl = ssl;
-
+                        
                         smtp.Timeout = Properties.Settings.Default.SmtpConnectionTimeout;
-
+                        
                         await smtp.SendMailAsync(message);
                     }
 
@@ -337,10 +342,16 @@ namespace dg.MailQueue
                     MarkSent(fileName);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 if (ConsoleLogEnabled)
                 {
+                    if (ConsoleLogExceptions)
+                    {
+                        Console.WriteLine("Exception thrown for " + fileName + ":\n    " +
+                            ex.Message.ToString().Replace("\n", "\n    "));
+                    }
+
                     Console.WriteLine("Task failed for " + fileName);
                 }
 

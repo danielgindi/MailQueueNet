@@ -57,6 +57,7 @@ namespace dg.MailQueue
                 service.OpenSettingsNamedPipe();
 
                 Coordinator.SharedInstance.ConsoleLogEnabled = true;
+                Coordinator.SharedInstance.ConsoleLogExceptions = args[1] == "debug";
 
                 Coordinator.SharedInstance.Start();
 
