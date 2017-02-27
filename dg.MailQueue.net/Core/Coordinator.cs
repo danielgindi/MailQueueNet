@@ -99,12 +99,12 @@ namespace dg.MailQueue
             {
                 if (ShouldStop()) break;
 
-                while (!IsThereAFreeWorker)
+                while (!ThereIsAFreeWorker && !ShouldStop())
                 {
                     lock (_actionMonitor)
                     {
                         // Did the looping condition change by now?
-                        if (IsThereAFreeWorker) break;
+                        if (ThereIsAFreeWorker || ShouldStop()) break;
 
                         // Lock for an hour. Any mail sent or worker getting freed, will release it.
                         Monitor.Wait(_actionMonitor, 60 * 60 * 1000);
@@ -132,6 +132,8 @@ namespace dg.MailQueue
                 {
                     lock (_actionMonitor)
                     {
+                        if (ShouldStop()) break;
+
                         Monitor.Wait(_actionMonitor, (int)(Properties.Settings.Default.SecondsUntilFolderRefresh * 1000f));
                     }
                 }
@@ -175,7 +177,7 @@ namespace dg.MailQueue
 
         #region Worker task
 
-        public bool IsThereAFreeWorker
+        public bool ThereIsAFreeWorker
         {
             get
             {
