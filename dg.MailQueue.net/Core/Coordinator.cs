@@ -338,6 +338,11 @@ namespace dg.MailQueue
 
                 try { MarkFailed(fileName); }
                 catch { }
+
+                lock (_actionMonitor)
+                {
+                    Monitor.Pulse(_actionMonitor);
+                }
             }
         }
 
