@@ -55,6 +55,9 @@ namespace dg.MailQueue
                 Console.WriteLine(@"** Notice: Running in non-service mode **");
 
                 service.OpenSettingsNamedPipe();
+
+                Coordinator.SharedInstance.ConsoleLogEnabled = true;
+
                 Coordinator.SharedInstance.Start();
 
                 Console.WriteLine("Press ESC to stop.");

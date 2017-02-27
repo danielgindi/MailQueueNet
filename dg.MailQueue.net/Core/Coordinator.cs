@@ -50,6 +50,8 @@ namespace dg.MailQueue
             Start();
         }
 
+        public bool ConsoleLogEnabled { get; set; } = false;
+
         #region Singleton
 
         private static Coordinator _instance = null;
@@ -101,6 +103,11 @@ namespace dg.MailQueue
 
                 while (!ThereIsAFreeWorker && !ShouldStop())
                 {
+                    if (ConsoleLogEnabled)
+                    {
+                        Console.WriteLine("Waiting for a free worker...");
+                    }
+
                     lock (_actionMonitor)
                     {
                         // Did the looping condition change by now?
@@ -110,7 +117,12 @@ namespace dg.MailQueue
                         Monitor.Wait(_actionMonitor, 60 * 60 * 1000);
                     }
                 }
-                
+
+                if (ConsoleLogEnabled)
+                {
+                    Console.WriteLine("A worker is available");
+                }
+
                 if (_fileNameList.Count == 0)
                 {
                     string queuePath = Properties.Settings.Default.QueueFolder;
@@ -130,25 +142,56 @@ namespace dg.MailQueue
 
                 if (_fileNameList.Count == 0)
                 {
+                    if (ConsoleLogEnabled)
+                    {
+                        Console.WriteLine("There is no mail in queue");
+                    }
+
                     lock (_actionMonitor)
                     {
                         if (ShouldStop()) break;
+
+                        if (ConsoleLogEnabled)
+                        {
+                            Console.WriteLine("Waiting for mail to get in the queue...");
+                        }
 
                         Monitor.Wait(_actionMonitor, (int)(Properties.Settings.Default.SecondsUntilFolderRefresh * 1000f));
                     }
                 }
 
                 string nextFileName = null;
-                for (var i = 0; i < _fileNameList.Count; i++)
+
+                if (_fileNameList.Count > 0)
                 {
-                    if (!_sendingFileNames.ContainsKey(_fileNameList[i]))
+                    if (ConsoleLogEnabled)
                     {
-                        nextFileName = _fileNameList[i];
-                        _fileNameList.RemoveAt(i);
-                        break;
+                        Console.WriteLine("Picking a mail from the queue...");
+                    }
+
+                    for (var i = 0; i < _fileNameList.Count; i++)
+                    {
+                        if (!_sendingFileNames.ContainsKey(_fileNameList[i]))
+                        {
+                            nextFileName = _fileNameList[i];
+                            _fileNameList.RemoveAt(i);
+                            break;
+                        }
+                    }
+
+                    if (ConsoleLogEnabled)
+                    {
+                        if (nextFileName == null)
+                        {
+                            Console.WriteLine("Picked no mail from the queue");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Picked mail named " + nextFileName + " from the queue");
+                        }
                     }
                 }
-                
+
                 if (nextFileName != null)
                 {
                     _sendingFileNames[nextFileName] = true;
@@ -160,10 +203,20 @@ namespace dg.MailQueue
             // Wait for all workers to finish
             while (_concurrentWorkers > 0)
             {
+                if (ConsoleLogEnabled)
+                {
+                    Console.WriteLine("Waiting for workers to finish...");
+                }
+
                 lock (_actionMonitor)
                 {
                     Monitor.Wait(_actionMonitor, 1000);
                 }
+            }
+
+            if (ConsoleLogEnabled)
+            {
+                Console.WriteLine("Done.");
             }
 
             lock (_stopLock)
@@ -193,6 +246,11 @@ namespace dg.MailQueue
 
             try
             {
+                if (ConsoleLogEnabled)
+                {
+                    Console.WriteLine("Reading mail from " + fileName);
+                }
+
                 SerializableMailMessage message = ReadMailFromFile(fileName);
 
                 string hostName = message.SmtpServer;
@@ -215,12 +273,22 @@ namespace dg.MailQueue
 
                 if (string.IsNullOrEmpty(hostName))
                 {
+                    if (ConsoleLogEnabled)
+                    {
+                        Console.WriteLine("No mail server name, skipping " + fileName);
+                    }
+
                     MarkSkipped(fileName);
                 }
                 else
                 {
                     Interlocked.Increment(ref _concurrentWorkers);
                     workerInUse = true;
+
+                    if (ConsoleLogEnabled)
+                    {
+                        Console.WriteLine("Sending " + fileName + " task to worker");
+                    }
 
                     using (SmtpClient smtp = new SmtpClient())
                     {
@@ -238,6 +306,11 @@ namespace dg.MailQueue
                         await smtp.SendMailAsync(message);
                     }
 
+                    if (ConsoleLogEnabled)
+                    {
+                        Console.WriteLine("Releasing worker from " + fileName + " task");
+                    }
+
                     // Task ended, decrement counter and pulse to the Coordinator thread
                     Interlocked.Decrement(ref _concurrentWorkers);
                     workerInUse = false;
@@ -252,6 +325,11 @@ namespace dg.MailQueue
             }
             catch
             {
+                if (ConsoleLogEnabled)
+                {
+                    Console.WriteLine("Task failed for " + fileName);
+                }
+
                 if (workerInUse)
                 {
                     // Decrement counter and pulse to the Coordinator thread
