@@ -85,6 +85,18 @@ namespace dg.MailQueue.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogErrorsToOs {
+            get {
+                return ((bool)(this["LogErrorsToOs"]));
+            }
+            set {
+                this["LogErrorsToOs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Smtp")]
         public string MailServiceType {
             get {

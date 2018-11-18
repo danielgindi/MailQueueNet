@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using dg.MailQueue.Core;
+using System.Diagnostics;
 
 namespace dg.MailQueue
 {
@@ -313,6 +314,17 @@ namespace dg.MailQueue
                     }
 
                     Console.WriteLine("Task failed for " + fileName);
+                }
+
+                if (Properties.Settings.Default.LogErrorsToOs)
+                {
+                    using (var eventLog = new EventLog("Application"))
+                    {
+                        eventLog.Source = "Application";
+                        eventLog.WriteEntry(
+                            "Failed to send mail from queue.\n\n" + ex.Message, 
+                            EventLogEntryType.Warning);
+                    }
                 }
 
                 if (workerInUse)
