@@ -31,6 +31,9 @@ _Debug/
 _Release/
 Ankh.NoLoad
 
+# Visual Studio 2015 cache/options directory
+.vs/
+
 #Project files
 [Bb]uild/
 Tests/bin/

@@ -1,44 +1,12 @@
-﻿//
-//  dg.MailQueue.net
-//
-//  Created by Daniel Cohen Gindi on 09/01/2014.
-//  Copyright (c) 2014 Daniel Cohen Gindi. All rights reserved.
-//
-//  https://github.com/danielgindi/drunken-danger-zone
-//
-//  The MIT License (MIT)
-//  
-//  Copyright (c) 2014 Daniel Cohen Gindi (danielgindi@gmail.com)
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included in all
-//  copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//  SOFTWARE. 
-//  
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Net.Mail;
-using System.Configuration;
 using System.Xml.Serialization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using dg.MailQueue.Core;
 
 namespace dg.MailQueue
 {
@@ -268,25 +236,40 @@ namespace dg.MailQueue
 
                 SerializableMailMessage message = ReadMailFromFile(fileName);
 
-                string hostName = message.SmtpServer;
-                int port = message.SmtpPort;
-                bool ssl = message.RequiresSsl;
-                bool auth = message.RequiresAuthentication;
-                string username = message.Username;
-                string password = message.Password;
+                Interlocked.Increment(ref _concurrentWorkers);
+                workerInUse = true;
 
-                if (string.IsNullOrEmpty(hostName))
+                if (ConsoleLogEnabled)
                 {
-                    Properties.Settings settings = Properties.Settings.Default;
-                    hostName = settings.SmtpServer;
-                    port = settings.SmtpPort;
-                    ssl = settings.SmtpSsl;
-                    auth = settings.SmtpAuthentication;
-                    username = settings.SmtpUsername;
-                    password = settings.SmtpPassword;
+                    Console.WriteLine("Sending " + fileName + " task to worker");
                 }
 
-                if (string.IsNullOrEmpty(hostName))
+                var mailSettings = message.MailSettings;
+                if (mailSettings == null || mailSettings.IsEmpty)
+                {
+                    mailSettings = SettingsController.GetMailSettings();
+                }
+
+                Senders.ISender sender = null;
+
+                if (mailSettings is SmtpMailServerSettings)
+                {
+                    sender = new Senders.SMTP();
+                }
+                else if (mailSettings is MailgunMailServerSettings)
+                {
+                    sender = new Senders.Mailgun();
+                }
+                else
+                {
+                    // It won't really do anything, since it's empty.
+                    // Maybe I should introduce a "null" sender, but I don't care about that at the moment.
+                    sender = new Senders.SMTP();
+                }
+
+                var success = await sender.SendMailAsync(message, mailSettings);
+
+                if (!success)
                 {
                     if (ConsoleLogEnabled)
                     {
@@ -297,49 +280,26 @@ namespace dg.MailQueue
                 }
                 else
                 {
-                    Interlocked.Increment(ref _concurrentWorkers);
-                    workerInUse = true;
-
                     if (ConsoleLogEnabled)
                     {
-                        Console.WriteLine("Sending " + fileName + " task to worker");
-                    }
-
-                    using (SmtpClient smtp = new SmtpClient())
-                    {
-                        smtp.Host = hostName.Trim();
-                        if (port > 0)
-                        {
-                            smtp.Port = port;
-                        }
-
-                        if (auth)
-                        {
-                            smtp.Credentials = new System.Net.NetworkCredential(username, password);
-                        }
-
-                        smtp.EnableSsl = ssl;
-                        
-                        smtp.Timeout = Properties.Settings.Default.SmtpConnectionTimeout;
-                        
-                        await smtp.SendMailAsync(message);
-                    }
-
-                    if (ConsoleLogEnabled)
-                    {
-                        Console.WriteLine("Releasing worker from " + fileName + " task");
-                    }
-
-                    // Task ended, decrement counter and pulse to the Coordinator thread
-                    Interlocked.Decrement(ref _concurrentWorkers);
-                    workerInUse = false;
-
-                    lock (_actionMonitor)
-                    {
-                        Monitor.Pulse(_actionMonitor);
+                        Console.WriteLine("Sent mail for " + fileName);
                     }
 
                     MarkSent(fileName);
+                }
+                
+                if (ConsoleLogEnabled)
+                {
+                    Console.WriteLine("Releasing worker from " + fileName + " task");
+                }
+
+                // Task ended, decrement counter and pulse to the Coordinator thread
+                Interlocked.Decrement(ref _concurrentWorkers);
+                workerInUse = false;
+
+                lock (_actionMonitor)
+                {
+                    Monitor.Pulse(_actionMonitor);
                 }
             }
             catch (Exception ex)
@@ -556,7 +516,7 @@ namespace dg.MailQueue
         {
             try
             {
-                SerializableMailMessage message = new SerializableMailMessage();
+                SerializableMailMessage message;
 
                 XmlSerializer serializer = new XmlSerializer(typeof(SerializableMailMessage));
 

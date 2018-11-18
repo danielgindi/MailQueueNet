@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Coordinator.cs" />
+    <Compile Include="Core\SettingsController.cs" />
     <Compile Include="Pipes\PipedService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +77,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Senders\ISender.cs" />
+    <Compile Include="Senders\Mailgun.cs" />
+    <Compile Include="Senders\SMTP.cs" />
     <Compile Include="Service\MailQueueService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -84,6 +88,7 @@
     </Compile>
     <Compile Include="Utilities\Folders.cs" />
     <Compile Include="Utilities\Files.cs" />
+    <Compile Include="Utilities\MultipartRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

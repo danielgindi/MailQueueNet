@@ -17,7 +17,15 @@ namespace Tests
             ISettingsContract settingsChannel = PipeFactory.NewSettingsChannel();
             IMailContract mailChannel = PipeFactory.NewMailChannel();
 
-            settingsChannel.SetSmtpSettings("smtp.gmail.com", 587, true, true, "[test email account here]", "[test password here]");
+            settingsChannel.SetMailSettings(new SmtpMailServerSettings {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                RequiresSsl = true,
+                RequiresAuthentication = true,
+                Username = "[test email account here]",
+                Password = "[test password here]"
+            });
+
             // settingsChannel.SetQueueFolder("C:\\mail\queued");
             // settingsChannel.SetFailedFolder("C:\\mail\failed");
 

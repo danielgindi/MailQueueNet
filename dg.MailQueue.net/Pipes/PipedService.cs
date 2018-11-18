@@ -34,6 +34,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.ServiceModel;
 using System.Net.Mail;
+using System.IO;
+using dg.MailQueue.Core;
 
 namespace dg.MailQueue
 {
@@ -50,16 +52,27 @@ namespace dg.MailQueue
             Coordinator.AddMail(mailMessage);
         }
 
+        [Obsolete("Use QueueMessageWithMailSettings instead")]
         public void QueueMessageWithSmtpSettings(SerializableMailMessage mailMessage, string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
         {
             if (mailMessage == null) return;
 
-            mailMessage.SmtpServer = smtpServer;
-            mailMessage.SmtpPort = port;
-            mailMessage.RequiresSsl = ssl;
-            mailMessage.RequiresAuthentication = authenticate;
-            mailMessage.Username = username;
-            mailMessage.Password = password;
+            QueueMessageWithMailSettings(mailMessage, new SmtpMailServerSettings
+            {
+                Host = smtpServer,
+                Port = port,
+                RequiresSsl = ssl,
+                RequiresAuthentication = authenticate,
+                Username = username,
+                Password = password
+            });
+        }
+
+        public void QueueMessageWithMailSettings(SerializableMailMessage mailMessage, IMailServerSettings mailSettings)
+        {
+            if (mailMessage == null) return;
+
+            mailMessage.MailSettings = mailSettings;
 
             Coordinator.AddMail(mailMessage);
         }
@@ -71,16 +84,27 @@ namespace dg.MailQueue
             Coordinator.AddMail(mailMessage);
         }
 
+        [Obsolete("Use QueueMessageWithMailSettingsNonBlocking instead")]
         public void QueueMessageWithSmtpSettingsNonBlocking(SerializableMailMessage mailMessage, string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
         {
             if (mailMessage == null) return;
 
-            mailMessage.SmtpServer = smtpServer;
-            mailMessage.SmtpPort = port;
-            mailMessage.RequiresSsl = ssl;
-            mailMessage.RequiresAuthentication = authenticate;
-            mailMessage.Username = username;
-            mailMessage.Password = password;
+            QueueMessageWithMailSettingsNonBlocking(mailMessage, new SmtpMailServerSettings
+            {
+                Host = smtpServer,
+                Port = port,
+                RequiresSsl = ssl,
+                RequiresAuthentication = authenticate,
+                Username = username,
+                Password = password
+            });
+        }
+
+        public void QueueMessageWithMailSettingsNonBlocking(SerializableMailMessage mailMessage, IMailServerSettings mailSettings)
+        {
+            if (mailMessage == null) return;
+
+            mailMessage.MailSettings = mailSettings;
 
             Coordinator.AddMail(mailMessage);
         }
@@ -91,13 +115,25 @@ namespace dg.MailQueue
 
         public void SetSmtpSettings(string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
         {
-            Properties.Settings.Default.SmtpServer = smtpServer;
-            Properties.Settings.Default.SmtpPort = port;
-            Properties.Settings.Default.SmtpSsl = ssl;
-            Properties.Settings.Default.SmtpAuthentication = authenticate;
-            Properties.Settings.Default.SmtpUsername = username;
-            Properties.Settings.Default.SmtpPassword = password;
-            Properties.Settings.Default.Save();
+            SetMailSettings(new SmtpMailServerSettings
+            {
+                Host = smtpServer,
+                Port = port,
+                RequiresSsl = ssl,
+                RequiresAuthentication = authenticate,
+                Username = username,
+                Password = password
+            });
+        }
+
+        public void SetMailSettings(IMailServerSettings settings)
+        {
+            SettingsController.SetMailSettings(settings);
+        }
+
+        public IMailServerSettings GetMailSettings()
+        {
+            return SettingsController.GetMailSettings();
         }
 
         public void SetQueueFolder(string path)
