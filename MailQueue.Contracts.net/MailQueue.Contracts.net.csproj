@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A12F1575-A725-46D6-973C-C02B52216F03}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{F2750AB7-3FF9-43EE-BF9C-4443A6BA092C}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
+    <RootNamespace>MailQueue.Contracts</RootNamespace>
+    <AssemblyName>MailQueue.Contracts.net</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -24,7 +24,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
@@ -35,8 +34,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -49,17 +50,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Model\IMailServerSettings.cs" />
+    <Compile Include="Model\MailgunMailServerSettings.cs" />
+    <Compile Include="Model\SmtpMailServerSettings.cs" />
+    <Compile Include="Model\SerializableMailMessage.cs" />
+    <Compile Include="PipeContracts\IMailContract.cs" />
+    <Compile Include="PipeContracts\ISettingsContract.cs" />
+    <Compile Include="PipeFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\XmlUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MailQueue.Contracts.net\MailQueue.Contracts.net.csproj">
-      <Project>{F2750AB7-3FF9-43EE-BF9C-4443A6BA092C}</Project>
-      <Name>MailQueue.Contracts.net</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
+    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

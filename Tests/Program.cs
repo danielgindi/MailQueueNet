@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.ServiceModel;
-using dg.MailQueue;
+using MailQueue;
 using System.Net.Mail;
 using System.Threading;
 
@@ -32,9 +32,9 @@ namespace Tests
             /*for (int counter = 1; counter < 100; counter++)
             {
                 MailMessage message = new MailMessage();
-                message.To.Add(new MailAddress(@"to.test@gmail.com", "Test dg.MailQueue.net account"));
-                message.From = new MailAddress(@"from.test@gmail.com", "Test dg.MailQueue.net account");
-                message.Subject = "Testing dg.MailQueue.net, round " + counter;
+                message.To.Add(new MailAddress(@"to.test@gmail.com", "Test MailQueue.net account"));
+                message.From = new MailAddress(@"from.test@gmail.com", "Test MailQueue.net account");
+                message.Subject = "Testing MailQueue.net, round " + counter;
                 message.Body = @"This is a test!";
 
                 if (counter % 10 == 0)
