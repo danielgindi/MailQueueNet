@@ -44,7 +44,7 @@ namespace MailQueue
         {
             if (mailMessage == null) return;
 
-            Coordinator.AddMail(mailMessage);
+            Coordinator.SharedInstance.AddMail(mailMessage);
         }
 
         [Obsolete("Use QueueMessageWithMailSettings instead")]
@@ -69,14 +69,14 @@ namespace MailQueue
 
             mailMessage.MailSettings = mailSettings;
 
-            Coordinator.AddMail(mailMessage);
+            Coordinator.SharedInstance.AddMail(mailMessage);
         }
 
         public void QueueMessageNonBlocking(SerializableMailMessage mailMessage)
         {
             if (mailMessage == null) return;
 
-            Coordinator.AddMail(mailMessage);
+            Coordinator.SharedInstance.AddMail(mailMessage);
         }
 
         [Obsolete("Use QueueMessageWithMailSettingsNonBlocking instead")]
@@ -101,7 +101,7 @@ namespace MailQueue
 
             mailMessage.MailSettings = mailSettings;
 
-            Coordinator.AddMail(mailMessage);
+            Coordinator.SharedInstance.AddMail(mailMessage);
         }
 
         #endregion

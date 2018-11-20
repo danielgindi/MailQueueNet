@@ -234,8 +234,18 @@ namespace MailQueue
                     Console.WriteLine("Reading mail from " + fileName);
                 }
 
-                SerializableMailMessage message = ReadMailFromFile(fileName);
+                SerializableMailMessage message = null;
 
+                try
+                {
+                    message = ReadMailFromFile(fileName);
+                }
+                catch (FileNotFoundException)
+                {
+                    MarkSkipped(fileName);
+                    return;
+                }
+                
                 Interlocked.Increment(ref _concurrentWorkers);
                 workerInUse = true;
 
@@ -304,7 +314,7 @@ namespace MailQueue
                     {
                         eventLog.Source = "Application";
                         eventLog.WriteEntry(
-                            "Failed to send mail from queue.\n\n" + ex.Message, 
+                            "Failed to send mail from queue.\n\n" + ex.Message + "\n\n" + ex.StackTrace, 
                             EventLogEntryType.Warning);
                     }
                 }
@@ -437,8 +447,9 @@ namespace MailQueue
             }
         }
 
-        private static int mailIdCounter = 1;
-        public static void AddMail(SerializableMailMessage message)
+        private int mailIdCounter = 1;
+
+        public void AddMail(SerializableMailMessage message)
         {
             string tempPath = Files.CreateEmptyTempFile();
             if (WriteMailToFile(message, tempPath))
@@ -454,8 +465,11 @@ namespace MailQueue
                     mailIdCounter++;
                     file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + mailIdCounter.ToString().PadLeft(8, '0') + @".mail");
 
+                    var originalSendingState = _sendingFileNames.ContainsKey(file);
+
                     try
                     {
+                        _sendingFileNames[file] = true;
                         File.Move(tempPath, file);
                         success = true;
                         break;
@@ -476,16 +490,31 @@ namespace MailQueue
                     {
                         continue;
                     }
+                    finally
+                    {
+                        if (!originalSendingState)
+                            _sendingFileNames.TryRemove(file, out originalSendingState);
+                    }
                 }
 
                 if (!success)
                 {
+                    var originalSendingState = _sendingFileNames.ContainsKey(file);
+
                     try
                     {
+                        _sendingFileNames[file] = true;
                         File.Move(tempPath, file);
                         success = true;
                     }
-                    catch { }
+                    catch
+                    {
+                    }
+                    finally
+                    {
+                        if (!originalSendingState)
+                            _sendingFileNames.TryRemove(file, out originalSendingState);
+                    }
                 }
 
                 if (success)
@@ -509,24 +538,17 @@ namespace MailQueue
 
         public static SerializableMailMessage ReadMailFromFile(string path)
         {
-            try
+            SerializableMailMessage message;
+
+            var serializer = new XmlSerializer(typeof(SerializableMailMessage));
+
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete))
+            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
             {
-                SerializableMailMessage message;
-
-                var serializer = new XmlSerializer(typeof(SerializableMailMessage));
-
-                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete))
-                using (var streamReader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    message = serializer.Deserialize(streamReader) as SerializableMailMessage;
-                }
-
-                return message;
+                message = serializer.Deserialize(streamReader) as SerializableMailMessage;
             }
-            catch
-            {
-                return null;
-            }
+
+            return message;
         }
 
         public static bool WriteMailToFile(SerializableMailMessage message, string path)
