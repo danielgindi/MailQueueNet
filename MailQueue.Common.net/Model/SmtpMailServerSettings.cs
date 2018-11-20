@@ -23,6 +23,11 @@ namespace MailQueue
         public bool RequiresAuthentication { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+
+        /// <summary>
+        /// The number of milliseconds to wait before the request times out.
+        /// The default value is 100,000 milliseconds (100 seconds).
+        /// </summary>
         public int ConnectionTimeout { get; set; } = 100000;
     }
 }
