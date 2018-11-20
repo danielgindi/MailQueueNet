@@ -15,6 +15,9 @@ namespace MailQueue
         {
             bool IsServiceMode = args.Length == 0 || args[0] != "console";
 
+            // Upgrade settings config file between versions
+            SettingsController.Upgrade();
+
             service = new MailQueueService();
 
             if (IsServiceMode)

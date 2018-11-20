@@ -5,6 +5,11 @@ namespace MailQueue
 {
     public static class SettingsController
     {
+        internal static void Upgrade()
+        {
+            Properties.Settings.Default.Upgrade();
+        }
+
         public static void SetMailSettings(IMailServerSettings settings)
         {
             if (settings == null)
