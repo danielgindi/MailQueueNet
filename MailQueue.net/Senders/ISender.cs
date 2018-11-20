@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace MailQueue.Senders
 {
     public interface ISender
     {
-        Task<bool> SendMailAsync(SerializableMailMessage message, IMailServerSettings settings);
+        Task<bool> SendMailAsync(MailMessage message, IMailServerSettings settings);
     }
 }

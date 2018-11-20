@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
+﻿using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace MailQueue.Senders
 {
     public class SMTP : ISender
     {
-        public async Task<bool> SendMailAsync(SerializableMailMessage message, IMailServerSettings settings)
+        public async Task<bool> SendMailAsync(MailMessage message, IMailServerSettings settings)
         {
             var smtpSettings = settings as SmtpMailServerSettings;
 

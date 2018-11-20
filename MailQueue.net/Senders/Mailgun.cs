@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 
 namespace MailQueue.Senders
 {
@@ -20,7 +20,7 @@ namespace MailQueue.Senders
             return string.Format("\"{0}\" <{1}>", displayName, address);
         }
 
-        public async Task<bool> SendMailAsync(SerializableMailMessage message, IMailServerSettings settings)
+        public async Task<bool> SendMailAsync(MailMessage message, IMailServerSettings settings)
         {
             var mgSettings = settings as MailgunMailServerSettings;
 
