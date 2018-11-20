@@ -495,6 +495,7 @@ namespace MailQueue
                         continue;
                     }
                 }
+
                 if (!success)
                 {
                     try
@@ -530,9 +531,10 @@ namespace MailQueue
             {
                 SerializableMailMessage message;
 
-                XmlSerializer serializer = new XmlSerializer(typeof(SerializableMailMessage));
+                var serializer = new XmlSerializer(typeof(SerializableMailMessage));
 
-                using (TextReader streamReader = new StreamReader(path, Encoding.UTF8))
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete))
+                using (var streamReader = new StreamReader(stream, Encoding.UTF8))
                 {
                     message = serializer.Deserialize(streamReader) as SerializableMailMessage;
                 }
@@ -549,9 +551,10 @@ namespace MailQueue
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(SerializableMailMessage));
+                var serializer = new XmlSerializer(typeof(SerializableMailMessage));
 
-                using (TextWriter streamWriter = new StreamWriter(path, false, Encoding.UTF8))
+                using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+                using (var streamWriter = new StreamWriter(stream, Encoding.UTF8))
                 {
                     serializer.Serialize(streamWriter, message);
                 }

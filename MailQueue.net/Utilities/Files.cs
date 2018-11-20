@@ -27,6 +27,7 @@ namespace MailQueue
         {
             string tempFilePath = Folders.GetTempDir() + Guid.NewGuid().ToString() + @".tmp";
             FileStream fs = null;
+
             while (true)
             {
                 try
@@ -52,12 +53,15 @@ namespace MailQueue
                     break;
                 }
             }
+
             if (fs != null)
             {
+                fs.Close();
                 fs.Dispose();
                 fs = null;
                 return tempFilePath;
             }
+
             return null;
         }
     }

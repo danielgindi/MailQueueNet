@@ -191,7 +191,7 @@ namespace MailQueue
         {
             if (part is MultipartFileField)
             {
-                using (var inputStream = new FileStream(((MultipartFileField)part).FilePath, FileMode.Open))
+                using (var inputStream = new FileStream(((MultipartFileField)part).FilePath, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete))
                 {
                     inputStream.CopyTo(stream);
                 }
@@ -206,7 +206,7 @@ namespace MailQueue
         {
             if (part is MultipartFileField)
             {
-                using (var inputStream = new FileStream(((MultipartFileField)part).FilePath, FileMode.Open))
+                using (var inputStream = new FileStream(((MultipartFileField)part).FilePath, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete))
                 {
                     await inputStream.CopyToAsync(stream);
                 }
