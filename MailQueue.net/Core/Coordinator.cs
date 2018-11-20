@@ -6,7 +6,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using MailQueue.Core;
 using System.Diagnostics;
 
 namespace MailQueue
@@ -255,11 +254,17 @@ namespace MailQueue
 
                 if (mailSettings is SmtpMailServerSettings)
                 {
-                    sender = new Senders.SMTP();
+                    sender = new Senders.SMTP()
+                    {
+                        ConnectionTimeout = Properties.Settings.Default.SmtpConnectionTimeout
+                    };
                 }
                 else if (mailSettings is MailgunMailServerSettings)
                 {
-                    sender = new Senders.Mailgun();
+                    sender = new Senders.Mailgun()
+                    {
+                        ConnectionTimeout = Properties.Settings.Default.MailgunTimeout
+                    };
                 }
                 else
                 {

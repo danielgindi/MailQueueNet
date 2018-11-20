@@ -1,9 +1,4 @@
-﻿using System.Net.Mail;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Xml.Schema;
-using System.IO;
-using MailQueue.Contracts.Utils;
+﻿using System.Xml.Serialization;
 
 namespace MailQueue
 {

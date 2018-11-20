@@ -5,6 +5,12 @@ namespace MailQueue.Senders
 {
     public class SMTP : ISender
     {
+        /// <summary>
+        /// The number of milliseconds to wait before the request times out.
+        /// The default value is 100,000 milliseconds (100 seconds).
+        /// </summary>
+        public int ConnectionTimeout { get; set; } = 100000;
+
         public async Task<bool> SendMailAsync(MailMessage message, IMailServerSettings settings)
         {
             var smtpSettings = settings as SmtpMailServerSettings;
@@ -30,7 +36,7 @@ namespace MailQueue.Senders
 
                 smtp.EnableSsl = smtpSettings.RequiresSsl;
 
-                smtp.Timeout = Properties.Settings.Default.SmtpConnectionTimeout;
+                smtp.Timeout = ConnectionTimeout;
 
                 await smtp.SendMailAsync(message);
             }

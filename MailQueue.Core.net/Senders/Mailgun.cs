@@ -10,6 +10,12 @@ namespace MailQueue.Senders
 {
     public class Mailgun : ISender
     {
+        /// <summary>
+        /// The number of milliseconds to wait before the request times out.
+        /// The default value is 100,000 milliseconds (100 seconds).
+        /// </summary>
+        public int ConnectionTimeout { get; set; } = 100000;
+
         private static string ComposeEmailDisplayAndAddress(string displayName, string address)
         {
             if (string.IsNullOrEmpty(displayName))
@@ -145,7 +151,7 @@ namespace MailQueue.Senders
             var webRequest = (HttpWebRequest)WebRequest.Create(url);
             webRequest.Method = "POST";
             webRequest.ContentType = request.ContentTypeHeader;
-            webRequest.Timeout = Properties.Settings.Default.MailgunTimeout;
+            webRequest.Timeout = ConnectionTimeout;
 
             webRequest.Headers.Add("Authorization", "basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"api:{mgSettings.ApiKey}")));
 

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace MailQueue.Core
+namespace MailQueue
 {
     public static class SettingsController
     {

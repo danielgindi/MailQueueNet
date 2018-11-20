@@ -30,12 +30,7 @@
 //  
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ServiceModel;
-using System.Net.Mail;
-using System.IO;
-using MailQueue.Core;
 
 namespace MailQueue
 {

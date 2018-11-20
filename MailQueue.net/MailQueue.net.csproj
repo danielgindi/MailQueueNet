@@ -77,18 +77,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Senders\ISender.cs" />
-    <Compile Include="Senders\Mailgun.cs" />
-    <Compile Include="Senders\SMTP.cs" />
     <Compile Include="Service\MailQueueService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Service\MailQueueServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utilities\Folders.cs" />
-    <Compile Include="Utilities\Files.cs" />
-    <Compile Include="Utilities\MultipartRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -111,9 +105,17 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MailQueue.Common.net\MailQueue.Common.net.csproj">
+      <Project>{f2ab7750-3ff9-6ba0-bf9c-4443a43ee92c}</Project>
+      <Name>MailQueue.Common.net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MailQueue.Contracts.net\MailQueue.Contracts.net.csproj">
       <Project>{F2750AB7-3FF9-43EE-BF9C-4443A6BA092C}</Project>
       <Name>MailQueue.Contracts.net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MailQueue.Core.net\MailQueue.Core.net.csproj">
+      <Project>{f2750ab7-3ff9-43ee-bf9c-5559a6ba092c}</Project>
+      <Name>MailQueue.Core.net</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

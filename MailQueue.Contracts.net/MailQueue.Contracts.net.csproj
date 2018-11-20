@@ -51,9 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Model\IMailServerSettings.cs" />
-    <Compile Include="Model\MailgunMailServerSettings.cs" />
-    <Compile Include="Model\SmtpMailServerSettings.cs" />
     <Compile Include="Model\SerializableMailMessage.cs" />
     <Compile Include="PipeContracts\IMailContract.cs" />
     <Compile Include="PipeContracts\ISettingsContract.cs" />
@@ -63,6 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MailQueue.Common.net\MailQueue.Common.net.csproj">
+      <Project>{f2ab7750-3ff9-6ba0-bf9c-4443a43ee92c}</Project>
+      <Name>MailQueue.Common.net</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
