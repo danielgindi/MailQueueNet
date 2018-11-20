@@ -13,11 +13,15 @@ so you can prevent blocking your app when sending those out.
 * Or if you want, you can run it from the command line (specifying any argument, will cause it to run as a console app)
 * Use `net start MailQueue.net` to start the service, or go to Services in Computer Management.
 
-## Usage:
-* Reference *MailQueue.Contracts.net.dll* in your project.
+## Usage as a queuing service:
+* Reference *MailQueue.Contracts.net.dll* and *MailQueue.Common.net.dll* in your project.
 * Use `ISettingsContract settingsChannel = PipeFactory.NewSettingsChannel()` or `IMailContract mailChannel = PipeFactory.NewMailChannel()` to create a channel the service.
 * Then use `settingsChannel` to setup any of the settings of the service,
 * And `mailChannel` to add mails to the queue.
+
+## Usage as a library:
+* The code is now separated to a core library (`MailQueue.Common.net.dll` + `MailQueue.Core.net.dll`), which can be used to send the emails, and the queueing service (`MailQueue.Contracts.net.dll` + `MailQueue.net.exe`).
+* You could reference just those two DLLs, and use it freely to send a standard `MailMessage` with the various services supported (Currently plain SMTP and Mailgun API).
 
 ## Me
 * Hi! I am Daniel Cohen Gindi. Or in short- Daniel.
