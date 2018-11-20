@@ -28,7 +28,7 @@ namespace MailQueue
         /// <param name="message"></param>
         /// <param name="settings"></param>
         /// <returns>true if succeeded, false if sending was skipped (i.e missing settings). Could throw exceptions for other reasons.</returns>
-        public static async Task<bool> SendMail(MailMessage message, IMailServerSettings settings)
+        public static async Task<bool> SendMailAsync(MailMessage message, IMailServerSettings settings)
         {
             var sender = GetSenderForSettings(settings);
             if (sender == null) return false;

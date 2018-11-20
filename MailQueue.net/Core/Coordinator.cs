@@ -249,31 +249,8 @@ namespace MailQueue
                 {
                     mailSettings = SettingsController.GetMailSettings();
                 }
-
-                Senders.ISender sender = null;
-
-                if (mailSettings is SmtpMailServerSettings)
-                {
-                    sender = new Senders.SMTP()
-                    {
-                        ConnectionTimeout = Properties.Settings.Default.SmtpConnectionTimeout
-                    };
-                }
-                else if (mailSettings is MailgunMailServerSettings)
-                {
-                    sender = new Senders.Mailgun()
-                    {
-                        ConnectionTimeout = Properties.Settings.Default.MailgunTimeout
-                    };
-                }
-                else
-                {
-                    // It won't really do anything, since it's empty.
-                    // Maybe I should introduce a "null" sender, but I don't care about that at the moment.
-                    sender = new Senders.SMTP();
-                }
-
-                var success = await sender.SendMailAsync(message, mailSettings);
+                
+                var success = await SenderFactory.SendMailAsync(message, mailSettings);
 
                 if (!success)
                 {

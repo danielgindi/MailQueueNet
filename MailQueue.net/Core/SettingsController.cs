@@ -75,6 +75,7 @@ namespace MailQueue
                         settings.RequiresAuthentication = Properties.Settings.Default.SmtpAuthentication;
                         settings.Username = Properties.Settings.Default.SmtpUsername;
                         settings.Password = Properties.Settings.Default.SmtpPassword;
+                        settings.ConnectionTimeout = Properties.Settings.Default.SmtpConnectionTimeout;
                         return settings;
                     }
 
@@ -83,6 +84,7 @@ namespace MailQueue
                         var settings = new MailgunMailServerSettings();
                         settings.Domain = Properties.Settings.Default.MailgunDomain;
                         settings.ApiKey = Properties.Settings.Default.MailgunApiKey;
+                        settings.ConnectionTimeout = Properties.Settings.Default.MailgunTimeout;
                         return settings;
                     }
             }

@@ -23,5 +23,6 @@ namespace MailQueue
         public bool RequiresAuthentication { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public int ConnectionTimeout { get; set; } = 100000;
     }
 }

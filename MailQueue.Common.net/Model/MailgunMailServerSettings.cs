@@ -26,5 +26,6 @@ namespace MailQueue
 
         public string Domain { get; set; }
         public string ApiKey { get; set; }
+        public int ConnectionTimeout { get; set; } = 100000;
     }
 }
