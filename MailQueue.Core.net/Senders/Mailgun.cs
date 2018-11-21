@@ -133,7 +133,7 @@ namespace MailQueue.Senders
                     if (fileStream == null) continue;
 
                     request.AddFile(
-                        attachment.ContentId ?? attachment.Name,
+                        "attachment",
                         fileStream.Name,
                         attachment.Name,
                         attachment.ContentType.MediaType);
