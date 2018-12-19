@@ -209,27 +209,52 @@ namespace MailQueue
                         if (stream == null) return;
 
                         writer.WriteStartElement("Attachment");
+
                         if (stream.Name != null)
                         {
                             writer.WriteAttributeString("FileName", stream.Name);
                         }
+
                         if (attachment.Name != null)
                         {
                             writer.WriteAttributeString("Name", attachment.Name);
                         }
+
                         if (attachment.NameEncoding != null)
                         {
                             writer.WriteAttributeString("NameEncoding", attachment.NameEncoding.EncodingName);
                         }
+
                         if (attachment.ContentId != null)
                         {
                             writer.WriteAttributeString("ContentId", attachment.ContentId);
                         }
+
                         if (attachment.ContentType != null)
                         {
                             writer.WriteAttributeString("ContentType", attachment.ContentType.MediaType);
                         }
+
                         writer.WriteAttributeString("TransferEncoding", attachment.TransferEncoding.ToString());
+
+                        if (attachment.ContentDisposition != null)
+                        {
+                            writer.WriteStartElement("ContentDisposition");
+                            {
+                                writer.WriteAttributeString("DispositionType", attachment.ContentDisposition.DispositionType);
+
+                                writer.WriteStartElement("Parameters");
+                                {
+                                    foreach (string key in attachment.ContentDisposition.Parameters.Keys)
+                                    {
+                                        writer.WriteAttributeString(key, attachment.ContentDisposition.Parameters[key]);
+                                    }
+                                }
+                                writer.WriteEndElement();
+                            }
+                            writer.WriteEndElement();
+                        }
+
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement();
@@ -383,25 +408,49 @@ namespace MailQueue
                 foreach (XmlNode node in attachmentsNode.ChildNodes)
                 {
                     var attachment = new Attachment(node.Attributes["FileName"].Value);
+
                     if (node.Attributes["Name"] != null)
                     {
                         attachment.Name = node.Attributes["Name"].Value;
                     }
+
                     if (node.Attributes["NameEncoding"] != null)
                     {
                         attachment.NameEncoding = Encoding.GetEncoding(node.Attributes["NameEncoding"].Value);
                     }
+
                     if (node.Attributes["ContentId"] != null)
                     {
                         attachment.ContentId = node.Attributes["ContentId"].Value;
                     }
+
                     if (node.Attributes["ContentType"] != null)
                     {
                         attachment.ContentType = new ContentType(node.Attributes["ContentType"].Value);
                     }
+
                     if (node.Attributes["TransferEncoding"] != null)
                     {
                         attachment.TransferEncoding = (TransferEncoding)Enum.Parse(typeof(TransferEncoding), node.Attributes["TransferEncoding"].Value);
+                    }
+
+                    var cdNode = node.SelectSingleNode("ContentDisposition");
+                    if (cdNode != null)
+                    {
+                        if (cdNode.Attributes["DispositionType"] != null)
+                        {
+                            attachment.ContentDisposition.DispositionType = cdNode.Attributes["DispositionType"].Value;
+                        }
+
+                        var pNode = cdNode.SelectSingleNode("Parameters");
+                        if (pNode != null)
+                        {
+                            for (var pi = 0; pi < pNode.Attributes.Count; pi++)
+                            {
+                                var attr = pNode.Attributes[pi];
+                                attachment.ContentDisposition.Parameters[attr.Name] = attr.Value;
+                            }
+                        }
                     }
 
                     this.Attachments.Add(attachment);

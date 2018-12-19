@@ -131,12 +131,23 @@ namespace MailQueue.Senders
                 {
                     var fileStream = attachment.ContentStream as FileStream;
                     if (fileStream == null) continue;
-
-                    request.AddFile(
-                        "attachment",
-                        fileStream.Name,
-                        attachment.Name,
-                        attachment.ContentType.MediaType);
+                    
+                    if (attachment.ContentDisposition.Inline)
+                    {
+                        request.AddFile(
+                            "inline",
+                            fileStream.Name,
+                            attachment.ContentId,
+                            attachment.ContentType.MediaType);
+                    }
+                    else
+                    {
+                        request.AddFile(
+                            "attachment",
+                            fileStream.Name,
+                            attachment.Name,
+                            attachment.ContentType.MediaType);
+                    }
                 }
             }
 
