@@ -227,14 +227,14 @@ namespace MailQueue
         {
             bool workerInUse = false;
 
+            SerializableMailMessage message = null;
+
             try
             {
                 if (ConsoleLogEnabled)
                 {
                     Console.WriteLine("Reading mail from " + fileName);
                 }
-
-                SerializableMailMessage message = null;
 
                 try
                 {
@@ -278,7 +278,7 @@ namespace MailQueue
                         Console.WriteLine("Sent mail for " + fileName);
                     }
 
-                    MarkSent(fileName);
+                    MarkSent(fileName, message);
                 }
                 
                 if (ConsoleLogEnabled)
@@ -325,7 +325,7 @@ namespace MailQueue
                     Interlocked.Decrement(ref _concurrentWorkers);
                 }
 
-                try { MarkFailed(fileName); }
+                try { MarkFailed(fileName, message); }
                 catch { }
 
                 lock (_actionMonitor)
@@ -335,7 +335,7 @@ namespace MailQueue
             }
         }
 
-        private void MarkFailed(string fileName)
+        private void MarkFailed(string fileName, SerializableMailMessage message)
         {
             bool shouldRemoveFile = false;
             lock (_failedFnLock)
@@ -376,7 +376,7 @@ namespace MailQueue
                     }
                     catch
                     {
-                        // No choice left, lost it, to get it out of the system
+                        // No choice left, lose it, to get it out of the system
                         try { File.Delete(fileName); }
                         catch { }
                     }
@@ -386,19 +386,23 @@ namespace MailQueue
                 {
                     _failedFileNameCounter.Remove(fileName);
                 }
+
+                if (message != null)
+                    DeleteAttachments(message);
             }
 
-            bool wasSending;
-            _sendingFileNames.TryRemove(fileName, out wasSending);
+            _sendingFileNames.TryRemove(fileName, out _);
         }
 
-        private void MarkSent(string fileName)
+        private void MarkSent(string fileName, SerializableMailMessage message)
         {
             try { File.Delete(fileName); }
             catch { }
 
-            bool wasSending;
-            _sendingFileNames.TryRemove(fileName, out wasSending);
+            _sendingFileNames.TryRemove(fileName, out _);
+
+            if (message != null)
+                DeleteAttachments(message);
         }
 
         private void MarkSkipped(string fileName)
@@ -406,8 +410,25 @@ namespace MailQueue
             // This is a file that has not failed, but was not sent. This can be when not SMTP server is specified at all, and we are waiting for settings.
             // So do nothing. This file is not in the cached list, and we will only reach it on the next round and try again.
 
-            bool wasSending;
-            _sendingFileNames.TryRemove(fileName, out wasSending);
+            _sendingFileNames.TryRemove(fileName, out _);
+        }
+
+        private void DeleteAttachments(SerializableMailMessage message)
+        {
+            if (message.Attachments != null)
+            {
+                foreach (var att in message.Attachments)
+                {
+                    if (att is AttachmentEx attex && attex.ShouldDeleteFile && attex.ContentStream is FileStream fs)
+                    {
+                        try
+                        {
+                            File.Delete(fs.Name);
+                        }
+                        catch { }
+                    }
+                }
+            }
         }
 
         #endregion

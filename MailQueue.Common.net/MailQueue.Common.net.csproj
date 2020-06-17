@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Model\IMailServerSettings.cs" />
     <Compile Include="Model\MailgunMailServerSettings.cs" />
+    <Compile Include="Model\AttachmentEx.cs" />
     <Compile Include="Model\SmtpMailServerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
