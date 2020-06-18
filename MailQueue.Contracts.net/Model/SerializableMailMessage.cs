@@ -241,7 +241,18 @@ namespace MailQueue
                         {
                             writer.WriteStartElement("ContentDisposition");
                             {
-                                writer.WriteAttributeString("DispositionType", attachment.ContentDisposition.DispositionType);
+                                if (attachment.ContentDisposition.DispositionType != null)
+                                    writer.WriteAttributeString("DispositionType", attachment.ContentDisposition.DispositionType);
+                                writer.WriteAttributeString("Inline", attachment.ContentDisposition.Inline.ToString());
+                                if (attachment.ContentDisposition.FileName != null)
+                                    writer.WriteAttributeString("FileName", attachment.ContentDisposition.FileName);
+                                if (attachment.ContentDisposition.CreationDate != DateTime.MinValue)
+                                    writer.WriteAttributeString("CreationDate", attachment.ContentDisposition.CreationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                                if (attachment.ContentDisposition.ModificationDate != DateTime.MinValue)
+                                    writer.WriteAttributeString("ModificationDate", attachment.ContentDisposition.ModificationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                                if (attachment.ContentDisposition.ReadDate != DateTime.MinValue)
+                                    writer.WriteAttributeString("ReadDate", attachment.ContentDisposition.ReadDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                                writer.WriteAttributeString("Size", attachment.ContentDisposition.Size.ToString());
 
                                 writer.WriteStartElement("Parameters");
                                 {
@@ -434,7 +445,7 @@ namespace MailQueue
                         attachment.TransferEncoding = (TransferEncoding)Enum.Parse(typeof(TransferEncoding), node.Attributes["TransferEncoding"].Value);
                     }
 
-                    var cdNode = node.SelectSingleNode("ContentDisposition");
+                    var cdNode = node.SelectSingleNode("*[local-name()='ContentDisposition']");
                     if (cdNode != null)
                     {
                         if (cdNode.Attributes["DispositionType"] != null)
@@ -442,7 +453,37 @@ namespace MailQueue
                             attachment.ContentDisposition.DispositionType = cdNode.Attributes["DispositionType"].Value;
                         }
 
-                        var pNode = cdNode.SelectSingleNode("Parameters");
+                        if (cdNode.Attributes["Inline"] != null)
+                        {
+                            attachment.ContentDisposition.Inline = Convert.ToBoolean(cdNode.Attributes["Inline"].Value);
+                        }
+
+                        if (cdNode.Attributes["FileName"] != null)
+                        {
+                            attachment.ContentDisposition.FileName = cdNode.Attributes["FileName"].Value;
+                        }
+
+                        if (cdNode.Attributes["CreationDate"] != null)
+                        {
+                            attachment.ContentDisposition.CreationDate = DateTime.ParseExact(cdNode.Attributes["CreationDate"].Value, "yyyy-MM-ddTHH:mm:ss.fffzzz", null);
+                        }
+
+                        if (cdNode.Attributes["ModificationDate"] != null)
+                        {
+                            attachment.ContentDisposition.ModificationDate = DateTime.ParseExact(cdNode.Attributes["ModificationDate"].Value, "yyyy-MM-ddTHH:mm:ss.fffzzz", null);
+                        }
+
+                        if (cdNode.Attributes["ReadDate"] != null)
+                        {
+                            attachment.ContentDisposition.ReadDate = DateTime.ParseExact(cdNode.Attributes["ReadDate"].Value, "yyyy-MM-ddTHH:mm:ss.fffzzz", null);
+                        }
+
+                        if (cdNode.Attributes["Size"] != null)
+                        {
+                            attachment.ContentDisposition.Size = Convert.ToInt64(cdNode.Attributes["Size"].Value);
+                        }
+
+                        var pNode = cdNode.SelectSingleNode("*[local-name()='Parameters']");
                         if (pNode != null)
                         {
                             for (var pi = 0; pi < pNode.Attributes.Count; pi++)
