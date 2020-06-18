@@ -448,24 +448,6 @@ namespace MailQueue
             _sendingFileNames.TryRemove(fileName, out _);
         }
 
-        private void DeleteAttachments(SerializableMailMessage message)
-        {
-            if (message.Attachments != null)
-            {
-                foreach (var att in message.Attachments)
-                {
-                    if (att is AttachmentEx attex && attex.ShouldDeleteFile && attex.ContentStream is FileStream fs)
-                    {
-                        try
-                        {
-                            File.Delete(fs.Name);
-                        }
-                        catch { }
-                    }
-                }
-            }
-        }
-
         #endregion
 
         #region Public methods
