@@ -489,7 +489,12 @@ namespace MailQueue
                             for (var pi = 0; pi < pNode.Attributes.Count; pi++)
                             {
                                 var attr = pNode.Attributes[pi];
-                                attachment.ContentDisposition.Parameters[attr.Name] = attr.Value;
+
+                                try
+                                {
+                                    attachment.ContentDisposition.Parameters[attr.Name] = attr.Value;
+                                }
+                                catch { }
                             }
                         }
                     }
