@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MailQueue
 {
@@ -242,6 +243,7 @@ namespace MailQueue
                 }
                 catch (FileNotFoundException)
                 {
+                    message?.Dispose();
                     MarkSkipped(fileName);
                     return;
                 }
@@ -269,6 +271,7 @@ namespace MailQueue
                         Console.WriteLine("No mail server name, skipping " + fileName);
                     }
 
+                    message?.Dispose();
                     MarkSkipped(fileName);
                 }
                 else
@@ -337,6 +340,13 @@ namespace MailQueue
 
         private void MarkFailed(string fileName, SerializableMailMessage message)
         {
+            var filesToDelete = message?.Attachments
+                ?.Where(x => x is AttachmentEx xx && xx.ShouldDeleteFile && x.ContentStream is FileStream fs)
+                ?.Select(x => ((FileStream)x.ContentStream).Name)
+                ?.ToList();
+
+            message?.Dispose();
+
             bool shouldRemoveFile = false;
             lock (_failedFnLock)
             {
@@ -387,8 +397,17 @@ namespace MailQueue
                     _failedFileNameCounter.Remove(fileName);
                 }
 
-                if (message != null)
-                    DeleteAttachments(message);
+                if (filesToDelete != null)
+                {
+                    foreach (var fn in filesToDelete)
+                    {
+                        try
+                        {
+                            File.Delete(fn);
+                        }
+                        catch { }
+                    }
+                }
             }
 
             _sendingFileNames.TryRemove(fileName, out _);
@@ -396,13 +415,29 @@ namespace MailQueue
 
         private void MarkSent(string fileName, SerializableMailMessage message)
         {
+            var filesToDelete = message?.Attachments
+                ?.Where(x => x is AttachmentEx xx && xx.ShouldDeleteFile && x.ContentStream is FileStream fs)
+                ?.Select(x => ((FileStream)x.ContentStream).Name)
+                ?.ToList();
+
+            message?.Dispose();
+
             try { File.Delete(fileName); }
             catch { }
 
             _sendingFileNames.TryRemove(fileName, out _);
 
-            if (message != null)
-                DeleteAttachments(message);
+            if (filesToDelete != null)
+            {
+                foreach (var fn in filesToDelete)
+                {
+                    try
+                    {
+                        File.Delete(fn);
+                    }
+                    catch { }
+                }
+            }
         }
 
         private void MarkSkipped(string fileName)
