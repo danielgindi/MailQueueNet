@@ -47,55 +47,7 @@ namespace MailQueue
             Coordinator.SharedInstance.AddMail(mailMessage);
         }
 
-        [Obsolete("Use QueueMessageWithMailSettings instead")]
-        public void QueueMessageWithSmtpSettings(SerializableMailMessage mailMessage, string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
-        {
-            if (mailMessage == null) return;
-
-            QueueMessageWithMailSettings(mailMessage, new SmtpMailServerSettings
-            {
-                Host = smtpServer,
-                Port = port,
-                RequiresSsl = ssl,
-                RequiresAuthentication = authenticate,
-                Username = username,
-                Password = password
-            });
-        }
-
         public void QueueMessageWithMailSettings(SerializableMailMessage mailMessage, IMailServerSettings mailSettings)
-        {
-            if (mailMessage == null) return;
-
-            mailMessage.MailSettings = mailSettings;
-
-            Coordinator.SharedInstance.AddMail(mailMessage);
-        }
-
-        public void QueueMessageNonBlocking(SerializableMailMessage mailMessage)
-        {
-            if (mailMessage == null) return;
-
-            Coordinator.SharedInstance.AddMail(mailMessage);
-        }
-
-        [Obsolete("Use QueueMessageWithMailSettingsNonBlocking instead")]
-        public void QueueMessageWithSmtpSettingsNonBlocking(SerializableMailMessage mailMessage, string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
-        {
-            if (mailMessage == null) return;
-
-            QueueMessageWithMailSettingsNonBlocking(mailMessage, new SmtpMailServerSettings
-            {
-                Host = smtpServer,
-                Port = port,
-                RequiresSsl = ssl,
-                RequiresAuthentication = authenticate,
-                Username = username,
-                Password = password
-            });
-        }
-
-        public void QueueMessageWithMailSettingsNonBlocking(SerializableMailMessage mailMessage, IMailServerSettings mailSettings)
         {
             if (mailMessage == null) return;
 
@@ -107,19 +59,6 @@ namespace MailQueue
         #endregion
 
         #region ISettingsContract
-
-        public void SetSmtpSettings(string smtpServer, int port, bool ssl, bool authenticate, string username, string password)
-        {
-            SetMailSettings(new SmtpMailServerSettings
-            {
-                Host = smtpServer,
-                Port = port,
-                RequiresSsl = ssl,
-                RequiresAuthentication = authenticate,
-                Username = username,
-                Password = password
-            });
-        }
 
         public void SetMailSettings(IMailServerSettings settings)
         {

@@ -10,10 +10,6 @@ namespace MailQueue
     public interface ISettingsContract
     {
         [OperationContract(IsOneWay = true)]
-        [Obsolete("Use SetMailSettings instead")]
-        void SetSmtpSettings(string smtpServer, int port, bool ssl, bool authenticate, string username, string password);
-
-        [OperationContract(IsOneWay = true)]
         [ServiceKnownType(typeof(SmtpMailServerSettings))]
         [ServiceKnownType(typeof(MailgunMailServerSettings))]
         void SetMailSettings(IMailServerSettings settings);
