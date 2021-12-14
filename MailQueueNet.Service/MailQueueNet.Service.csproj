@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0283E429-85FB-4874-9E32-F16521C091B1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MailQueueNet.Service</RootNamespace>
+    <AssemblyName>MailQueueNet.Service</AssemblyName>
+    <TargetFramework>net5.0</TargetFramework>
+    <FileAlignment>512</FileAlignment>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <Copyright>Copyright © Daniel Cohen Gindi (danielgindi@gmail.com) 2014</Copyright>
+    <Version>2.0.9</Version>
+    <PublishSingleFile>false</PublishSingleFile>
+    <!-- https://docs.microsoft.com/en-us/dotnet/core/rid-catalog -->
+    <RuntimeIdentifiers>win-x64;win10-x64;linux-x64;ubuntu.20.04-x64;osx.11.0-x64</RuntimeIdentifiers>
+    <UseAppHost>true</UseAppHost>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RollForward>LatestMinor</RollForward>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IsWindows Condition="'$(PublishProfile)' == 'Windows.pubxml' Or '$(PublishProfile)' == 'WindowsSingle.pubxml' Or ('$(PublishProfile)' == '' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true')">true</IsWindows>
+    <IsOSX Condition="'$(PublishProfile)' == 'macOS.pubxml' Or '$(PublishProfile)' == 'macOSSingle.pubxml' Or ('$(PublishProfile)' == '' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true')">true</IsOSX>
+    <IsLinux Condition="'$(PublishProfile)' == 'Linux.pubxml' Or '$(PublishProfile)' == 'LinuxSingle.pubxml' Or ('$(PublishProfile)' == '' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true')">true</IsLinux>
+    <IsPortable Condition="'$(PublishProfile)' == 'Portable.pubxml'">true</IsPortable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowedReferenceRelatedFileExtensions>.pdb;.dll.config</AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <DefineConstants>Linux</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <DefineConstants>Windows</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsOSX)'=='true'">
+    <DefineConstants>OSX</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsPortable)'=='true'">
+    <DefineConstants>Portable</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\_Debug\Service\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\_Release\Service\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.41.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.0" Condition="'$(IsLinux)'=='true' Or '$(IsPortable)'=='true'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" Condition="'$(IsWindows)'=='true' Or '$(IsPortable)'=='true'" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MailQueueNet.Common\MailQueueNet.Common.csproj" />
+    <ProjectReference Include="..\MailQueueNet.Core\MailQueueNet.Core.csproj">
+      <Project>{f2750ab7-3ff9-43ee-bf9c-5559a6ba092c}</Project>
+      <Name>MailQueueNet.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Certs\localhost.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Certs\localhost.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true' Or '$(IsPortable)'=='true'">
+    <None Update="MailQueueNet.systemd.service">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

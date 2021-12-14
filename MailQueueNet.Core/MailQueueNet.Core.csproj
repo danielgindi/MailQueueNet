@@ -5,44 +5,46 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A12F1575-A725-46D6-973C-C02B52216F03}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{F2750AB7-3FF9-43EE-BF9C-5559A6BA092C}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>MailQueueNet.Core</RootNamespace>
+    <AssemblyName>MailQueueNet.Core</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <FileAlignment>512</FileAlignment>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.9</Version>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\_Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\_Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+    <Copyright>Copyright © Daniel Cohen Gindi (danielgindi@gmail.com) 2014</Copyright>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Net.Client" Version="2.41.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MailQueueNet.Common\MailQueueNet.Common.csproj">
-      <Project>{F2750AB7-3FF9-43EE-BF9C-4443A6BA092C}</Project>
-      <Name>MailQueueNet.Common</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\MailQueueNet.Common\MailQueueNet.Common.csproj" />
   </ItemGroup>
 </Project>

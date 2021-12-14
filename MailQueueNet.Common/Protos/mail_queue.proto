@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+option csharp_namespace = "MailQueueNet.Grpc";
+
+package MailQueue;
+
+service MailGrpcService {
+  rpc QueueMail (MailMessage) returns (MailMessageReply);
+  rpc QueueMailWithSettings (MailMessageWithSettings) returns (MailMessageReply);
+  rpc SetMailSettings (SetMailSettingsMessage) returns (SetMailSettingsReply);
+  rpc GetMailSettings (GetMailSettingsMessage) returns (GetMailSettingsReply);
+  rpc SetSettings (SetSettingsMessage) returns (SetSettingsReply);
+  rpc GetSettings (GetSettingsMessage) returns (GetSettingsReply);
+}
+
+message Settings {
+  oneof opt_queueFolder { string opt_queueFolder_value = 1; };
+  oneof opt_failedFolder { string opt_failedFolder_value = 2; };
+  float secondsUntilFolderRefresh = 3;
+  int32 maximumConcurrentWorkers = 4;
+  int32 maximumFailureRetries = 5;
+}
+
+message SmtpMailSettings {
+  oneof opt_host { string opt_host_value = 1; };
+  int32 port = 2;
+  bool requiresSsl = 3;
+  bool requiresAuthentication = 4;
+  oneof opt_username { string opt_username_value = 5; };
+  oneof opt_password { string opt_password_value = 6; };
+
+  // The number of milliseconds to wait before the request times out. The default value is 100,000 milliseconds (100 seconds).
+  int32 connectionTimeout = 7;
+}
+
+message MailgunMailSettings {
+  oneof opt_domain { string opt_domain_value = 1; };
+  oneof opt_apiKey { string opt_apiKey_value = 2; };
+
+  // The number of milliseconds to wait before the request times out. The default value is 100,000 milliseconds (100 seconds).
+  int32 connectionTimeout = 7;
+}
+
+message MailSettings {
+  oneof settings {
+    SmtpMailSettings smtp = 11;
+    MailgunMailSettings mailgun = 12;
+  }
+}
+
+message MailMessage {
+  oneof opt_body { string opt_body_value = 1; };
+  oneof opt_bodyEncoding { string opt_bodyEncoding_value = 2; };
+  bool isBodyHtml = 3;
+  oneof opt_subject { string opt_subject_value = 4; };
+  oneof opt_subjectEncoding { string opt_subjectEncoding_value = 5; };
+  oneof opt_headersEncoding { string opt_headersEncoding_value = 6; };
+  MailAddress from = 7;
+  MailAddress sender = 8;
+  repeated MailAddress to = 9;
+  repeated MailAddress cc = 10;
+  repeated MailAddress bcc = 11;
+  repeated MailAddress replyTo = 12;
+  oneof opt_priority { string opt_priority_value = 13; };
+  oneof opt_deliveryNotificationOptions { string opt_deliveryNotificationOptions_value = 14; };
+  repeated Attachment attachments = 15;
+  repeated Header headers = 16;
+}
+
+message MailMessageWithSettings {
+  MailMessage message = 1;
+  MailSettings settings = 2;
+}
+
+message MailAddress {
+  oneof opt_address { string opt_address_value = 1; };
+  oneof opt_displayName { string opt_displayName_value = 2; };
+}
+
+message Attachment {
+  oneof opt_name { string opt_name_value = 1; };
+  oneof opt_nameEncoding { string opt_nameEncoding_value = 2; };
+  oneof opt_contentId { string opt_contentId_value = 3; };
+  oneof opt_fileName { string opt_fileName_value = 4; };
+  oneof opt_contentType { string opt_contentType_value = 5; };
+  oneof opt_transferEncoding { string opt_transferEncoding_value = 6; };
+  ContentDisposition contentDisposition = 7;
+  bool shouldDelete = 8;
+}
+
+message Header {
+  oneof opt_name { string opt_name_value = 1; };
+  oneof opt_value { string opt_value_value = 2; };
+}
+
+message ContentDisposition {
+  oneof opt_dispositionType { string opt_dispositionType_value = 1; };
+  bool inline = 2;
+  oneof opt_fileName { string opt_fileName_value = 3; };
+  oneof opt_creationDate { string opt_creationDate_value = 4; };
+  oneof opt_modificationDate { string opt_modificationDate_value = 5; };
+  oneof opt_readDate { string opt_readDate_value = 6; };
+  int64 size = 7;
+  map<string,string> params = 8;
+}
+
+message MailMessageReply {
+  bool success = 1;
+}
+
+message SetMailSettingsMessage {
+  MailSettings settings = 1;
+}
+message SetMailSettingsReply {}
+
+message GetMailSettingsMessage {}
+message GetMailSettingsReply {
+  MailSettings settings = 1;
+}
+
+message SetSettingsMessage {
+  Settings settings = 1;
+}
+message SetSettingsReply {}
+
+message GetSettingsMessage {}
+message GetSettingsReply {
+  Settings settings = 1;
+}

@@ -1,0 +1,26 @@
+﻿[Unit]
+Description=MailQueueNet service
+
+[Service]
+Type=notify
+WorkingDirectory=/opt/MailQueueNet
+ExecStart=/opt/MailQueueNet/MailQueueNet
+SyslogIdentifier=MailQueueNet
+Restart=always
+RestartSec=5
+User=MailQueueNet
+Group=MailQueueNet
+Environment=DOTNET_ROOT=/usr/share/dotnet
+
+[Install]
+WantedBy=multi-user.target
+
+# sudo mkdir /opt/MailQueueNet
+# sudo groupadd MailQueueNet
+# sudo useradd -s /bin/false -g MailQueueNet -d /opt/MailQueueNet MailQueueNet
+# sudo chown -R MailQueueNet: /opt/MailQueueNet
+# sudo chmod o+x /opt/MailQueueNet/MailQueueNet
+# cp MailQueueNet.systemd.service /etc/systemd/system/MailQueueNet.systemd.service
+# sudo systemctl daemon-reload
+# sudo systemctl enable MailQueueNet
+# sudo systemctl start MailQueueNet
