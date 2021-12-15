@@ -5,13 +5,17 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MailQueueNet.Senders
 {
     public class Mailgun : ISender
     {
-        private HttpClient s_HttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true });
+        private HttpClient s_HttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true })
+        {
+            Timeout = System.Threading.Timeout.InfiniteTimeSpan
+        };
 
         private static string ComposeEmailDisplayAndAddress(string displayName, string address)
         {
@@ -23,7 +27,7 @@ namespace MailQueueNet.Senders
             return string.Format("\"{0}\" <{1}>", displayName, address);
         }
 
-        public async Task<bool> SendMailAsync(MailMessage message, MailQueueNet.Grpc.MailSettings settings)
+        public async Task<bool> SendMailAsync(MailMessage message, Grpc.MailSettings settings)
         {
             var mgSettings = settings.Mailgun;
 
@@ -156,7 +160,8 @@ namespace MailQueueNet.Senders
 
                 s_HttpClient.Timeout = TimeSpan.FromMilliseconds(mgSettings.ConnectionTimeout);
 
-                using (var resp = await s_HttpClient.PostAsync(url, request).ConfigureAwait(false))
+                using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(mgSettings.ConnectionTimeout)))
+                using (var resp = await s_HttpClient.PostAsync(url, request, cancellationTokenSource.Token).ConfigureAwait(false))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
