@@ -25,7 +25,8 @@ The name has changed to `MailQueueNet`.
 * Do this:
 ```c# 
 var mailChannel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions {
-	Credentials = new Grpc.Core.SslCredentials(null, null, v => true) // allow self-signed certs
+    // .NET Core: HttpHandler = new HttpClientHandler { /* allow self-signed certs ServerCertificateCustomValidationCallback = (e, c, ch, errs) => true */ },
+    // Windows/.NET 4.7.2: HttpHandler = new WinHttpHandler { /* allow self-signed certs ServerCertificateValidationCallback = (e, c, ch, errs) => true */ },
 });
 var mailClient = new MailQueueNet.Grpc.MailGrpcService.MailGrpcServiceClient(mailChannel);
 ```

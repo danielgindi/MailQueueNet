@@ -1,5 +1,4 @@
 ﻿using Grpc.Net.Client;
-using MailQueueNet;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Threading;
@@ -12,9 +11,8 @@ namespace Tests
         {
             Thread.Sleep(1000); // Wait for the service to start
 
-            var httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true, ServerCertificateCustomValidationCallback = (e, c, ch, errs) => true });
             var mailChannel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions {
-                HttpClient = httpClient
+                HttpHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (e, c, ch, errs) => true }
             });
             var mailClient = new MailQueueNet.Grpc.MailGrpcService.MailGrpcServiceClient(mailChannel);
 
