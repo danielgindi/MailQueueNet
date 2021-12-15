@@ -99,6 +99,7 @@ namespace MailQueueNet.Service.Core
                     {
                         AddOrUpdateAppSetting(jSettings, "queue:mailgun:domain", settings.Mailgun.Domain);
                         AddOrUpdateAppSetting(jSettings, "queue:mailgun:api_key", settings.Mailgun.ApiKey);
+                        AddOrUpdateAppSetting(jSettings, "queue:mailgun:connection_timeout", settings.Mailgun.ConnectionTimeout);
                     }
                     break;
                 default:
@@ -129,6 +130,10 @@ namespace MailQueueNet.Service.Core
             {
                 case "smtp":
                     {
+                        var timeout = configuration.GetValue("queue:smtp:connection_timeout", 100000);
+                        if (timeout <= 0)
+                            timeout = 100000;
+
                         return new Grpc.MailSettings
                         {
                             Smtp = new Grpc.SmtpMailSettings
@@ -139,20 +144,24 @@ namespace MailQueueNet.Service.Core
                                 RequiresAuthentication = configuration.GetValue("queue:smtp:authentication", false),
                                 Username = configuration.GetValue("queue:smtp:username", ""),
                                 Password = configuration.GetValue("queue:smtp:password", ""),
-                                ConnectionTimeout = configuration.GetValue("queue:smtp:connection_timeout", 100000),
+                                ConnectionTimeout = timeout,
                             }
                         };
                     }
 
                 case "mailgun":
                     {
+                        var timeout = configuration.GetValue("queue:mailgun:connection_timeout", 100000);
+                        if (timeout <= 0)
+                            timeout = 100000;
+
                         return new Grpc.MailSettings
                         {
                             Mailgun = new Grpc.MailgunMailSettings
                             {
                                 Domain = configuration.GetValue("queue:mailgun:domain", ""),
                                 ApiKey = configuration.GetValue("queue:mailgun:api_key", ""),
-                                ConnectionTimeout = configuration.GetValue("queue:mailgun:connection_timeout", 100000),
+                                ConnectionTimeout = timeout,
                             }
                         };
                     }

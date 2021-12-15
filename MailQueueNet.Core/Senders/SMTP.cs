@@ -30,7 +30,7 @@ namespace MailQueueNet.Senders
 
                 smtp.EnableSsl = smtpSettings.RequiresSsl;
 
-                smtp.Timeout = smtpSettings.ConnectionTimeout;
+                smtp.Timeout = smtpSettings.ConnectionTimeout <= 0 ? 100000 : smtpSettings.ConnectionTimeout;
 
                 await smtp.SendMailAsync(message);
             }
