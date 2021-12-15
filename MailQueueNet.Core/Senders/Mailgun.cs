@@ -14,7 +14,7 @@ namespace MailQueueNet.Senders
     {
         private HttpClient s_HttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = true })
         {
-            Timeout = System.Threading.Timeout.InfiniteTimeSpan
+            Timeout = Timeout.InfiniteTimeSpan
         };
 
         private static string ComposeEmailDisplayAndAddress(string displayName, string address)
@@ -36,23 +36,23 @@ namespace MailQueueNet.Senders
                 return false;
             }
 
-            using (var request = new MultipartFormDataContent("MP/BOUNDARY/" + Guid.NewGuid().ToString()))
+            using (var reqContent = new MultipartFormDataContent("MP/BOUNDARY/" + Guid.NewGuid().ToString()))
             {
                 if (message.Subject != null)
                 {
-                    request.Add(new StringContent(message.Subject), "subject");
+                    reqContent.Add(new StringContent(message.Subject), "subject");
                 }
 
                 if (message.From != null)
                 {
-                    request.Add(new StringContent(ComposeEmailDisplayAndAddress(message.From.DisplayName, message.From.Address)), "from");
+                    reqContent.Add(new StringContent(ComposeEmailDisplayAndAddress(message.From.DisplayName, message.From.Address)), "from");
                 }
 
                 if (message.To != null && message.To.Count > 0)
                 {
                     foreach (var to in message.To)
                     {
-                        request.Add(new StringContent(ComposeEmailDisplayAndAddress(to.DisplayName, to.Address)), "to");
+                        reqContent.Add(new StringContent(ComposeEmailDisplayAndAddress(to.DisplayName, to.Address)), "to");
                     }
                 }
 
@@ -60,7 +60,7 @@ namespace MailQueueNet.Senders
                 {
                     foreach (var to in message.CC)
                     {
-                        request.Add(new StringContent(ComposeEmailDisplayAndAddress(to.DisplayName, to.Address)), "cc");
+                        reqContent.Add(new StringContent(ComposeEmailDisplayAndAddress(to.DisplayName, to.Address)), "cc");
                     }
                 }
 
@@ -68,13 +68,13 @@ namespace MailQueueNet.Senders
                 {
                     foreach (var to in message.Bcc)
                     {
-                        request.Add(new StringContent(ComposeEmailDisplayAndAddress(to.DisplayName, to.Address)), "bcc");
+                        reqContent.Add(new StringContent(ComposeEmailDisplayAndAddress(to.DisplayName, to.Address)), "bcc");
                     }
                 }
 
                 if (message.ReplyToList != null && message.ReplyToList.Count > 0)
                 {
-                    request.Add(new StringContent(string.Join(",",
+                    reqContent.Add(new StringContent(string.Join(",",
                         message.ReplyToList.Select(x => ComposeEmailDisplayAndAddress(x.DisplayName, x.Address)))
                     ), "h:Reply-To");
                 }
@@ -86,7 +86,7 @@ namespace MailQueueNet.Senders
                         var values = message.Headers.GetValues(key);
                         foreach (var value in values)
                         {
-                            request.Add(new StringContent(value), key);
+                            reqContent.Add(new StringContent(value), key);
                         }
                     }
                     else if (key.StartsWith("Mailgun:")) // Any mailgun header to pass. "Mailgun:" will be stripped from the key.
@@ -95,7 +95,7 @@ namespace MailQueueNet.Senders
                         var keyPart = key.Remove(0, 8);
                         foreach (var value in values)
                         {
-                            request.Add(new StringContent(value), keyPart);
+                            reqContent.Add(new StringContent(value), keyPart);
                         }
                     }
                     else if (key == "X-Mailgun-Tag") // Compatibility with SMTP api
@@ -103,7 +103,7 @@ namespace MailQueueNet.Senders
                         var values = message.Headers.GetValues(key);
                         foreach (var value in values)
                         {
-                            request.Add(new StringContent(value), "o:tag");
+                            reqContent.Add(new StringContent(value), "o:tag");
                         }
                     }
                 }
@@ -113,7 +113,7 @@ namespace MailQueueNet.Senders
 
                 if (!string.IsNullOrWhiteSpace(message.Body))
                 {
-                    request.Add(new StringContent(message.Body), message.IsBodyHtml ? "html" : "text");
+                    reqContent.Add(new StringContent(message.Body), message.IsBodyHtml ? "html" : "text");
                     if (message.IsBodyHtml) hasHtmlBody = true;
                     else hasTextBody = true;
                 }
@@ -122,14 +122,14 @@ namespace MailQueueNet.Senders
                 {
                     var content = message.AlternateViews.FirstOrDefault(x => x.ContentType.MediaType == "text/html");
                     if (content != null)
-                        request.Add(new StreamContent(content.ContentStream), "html");
+                        reqContent.Add(new StreamContent(content.ContentStream), "html");
                 }
 
                 if (!hasTextBody)
                 {
                     var content = message.AlternateViews.FirstOrDefault(x => x.ContentType.MediaType == "text/plain");
                     if (content != null)
-                        request.Add(new StreamContent(content.ContentStream), "text");
+                        reqContent.Add(new StreamContent(content.ContentStream), "text");
                 }
 
                 if (message.Attachments != null)
@@ -143,34 +143,37 @@ namespace MailQueueNet.Senders
                         {
                             var fileContent = new StreamContent(fileStream);
                             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(attachment.ContentType.MediaType);
-                            request.Add(fileContent, "inline", attachment.ContentId);
+                            reqContent.Add(fileContent, "inline", attachment.ContentId);
                         }
                         else
                         {
                             var fileContent = new StreamContent(fileStream);
                             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(attachment.ContentType.MediaType);
-                            request.Add(fileContent, "attachment", attachment.Name);
+                            reqContent.Add(fileContent, "attachment", attachment.Name);
                         }
                     }
                 }
 
                 var url = $"https://api.mailgun.net/v3/{mgSettings.Domain}/messages";
 
-                request.Headers.Add("Authorization", "basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"api:{mgSettings.ApiKey}")));
-
-                s_HttpClient.Timeout = TimeSpan.FromMilliseconds(mgSettings.ConnectionTimeout);
-
-                using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(mgSettings.ConnectionTimeout)))
-                using (var resp = await s_HttpClient.PostAsync(url, request, cancellationTokenSource.Token).ConfigureAwait(false))
+                using (var req = new HttpRequestMessage(new HttpMethod("POST"), url))
                 {
-                    if (!resp.IsSuccessStatusCode)
-                    {
-                        throw new WebException($"Status {resp.StatusCode} returned from MailGun API: {await resp.Content.ReadAsStringAsync().ConfigureAwait(false)}");
-                    }
+                    req.Content = reqContent;
+                    req.Headers.Authorization = System.Net.Http.Headers.AuthenticationHeaderValue.Parse("basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"api:{mgSettings.ApiKey}")));
 
-                    if (!resp.Content.Headers.ContentType.MediaType.StartsWith("application/json"))
+                    var timeout = mgSettings.ConnectionTimeout <= 0 ? 100000 : mgSettings.ConnectionTimeout;
+                    using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout)))
+                    using (var resp = await s_HttpClient.SendAsync(req, cancellationTokenSource.Token).ConfigureAwait(false))
                     {
-                        throw new WebException($"Invalid response returned from MailGun API: {(await resp.Content.ReadAsStringAsync().ConfigureAwait(false))}");
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            throw new WebException($"Status {resp.StatusCode} returned from MailGun API: {await resp.Content.ReadAsStringAsync().ConfigureAwait(false)}");
+                        }
+
+                        if (!resp.Content.Headers.ContentType.MediaType.StartsWith("application/json"))
+                        {
+                            throw new WebException($"Invalid response returned from MailGun API: {(await resp.Content.ReadAsStringAsync().ConfigureAwait(false))}");
+                        }
                     }
                 }
             }
