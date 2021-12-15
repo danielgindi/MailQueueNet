@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 
-namespace MailQueueNet
+namespace MailQueueNet.Service.Utilities
 {
-    public static class Files
+    internal static class Files
     {
-        public static string MapPath(string path)
+        internal static string MapPath(string path)
         {
             if (Path.IsPathRooted(path))
             {
@@ -21,7 +21,7 @@ namespace MailQueueNet
             }
         }
 
-        public static string CreateEmptyTempFile()
+        internal static string CreateEmptyTempFile()
         {
             string tempFilePath = Folders.GetTempDir() + Guid.NewGuid().ToString() + @".tmp";
             FileStream fs = null;

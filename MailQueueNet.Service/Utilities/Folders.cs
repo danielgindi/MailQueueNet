@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 
-namespace MailQueueNet
+namespace MailQueueNet.Service.Utilities
 {
-    public static class Folders
+    internal static class Folders
     {
-        public static bool VerifyDirectoryExists(string path)
+        internal static bool VerifyDirectoryExists(string path)
         {
             if (!Path.IsPathRooted(path))
             {
@@ -32,7 +32,7 @@ namespace MailQueueNet
             return true;
         }
 
-        public static DirectoryInfo CreateDirectory(string path)
+        internal static DirectoryInfo CreateDirectory(string path)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(Path.GetFullPath(path));
 
