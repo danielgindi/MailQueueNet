@@ -16,7 +16,6 @@
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>3.0.2</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -39,6 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />

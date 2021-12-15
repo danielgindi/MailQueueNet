@@ -36,16 +36,16 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
-    <DefineConstants>Linux</DefineConstants>
+    <DefineConstants>$(DefineConstants);Linux</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
-    <DefineConstants>Windows</DefineConstants>
+    <DefineConstants>$(DefineConstants);Windows</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsOSX)'=='true'">
-    <DefineConstants>OSX</DefineConstants>
+    <DefineConstants>$(DefineConstants);OSX</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsPortable)'=='true'">
-    <DefineConstants>Portable</DefineConstants>
+    <DefineConstants>$(DefineConstants);Portable</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -54,7 +54,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\_Debug\Service\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -65,7 +65,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\_Release\Service\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
