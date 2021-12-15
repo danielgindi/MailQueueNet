@@ -43,7 +43,7 @@ namespace MailQueueNet.Grpc
                 }, options);
             }
 
-            public virtual AsyncUnaryCall<MailMessageReply> QueueMailAsyncWithSettings(System.Net.Mail.MailMessage message, MailSettings settings, Metadata headers = null, System.DateTime? deadline = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public virtual AsyncUnaryCall<MailMessageReply> QueueMailWithSettingsAsync(System.Net.Mail.MailMessage message, MailSettings settings, Metadata headers = null, System.DateTime? deadline = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
                 return QueueMailWithSettingsAsync(new MailMessageWithSettings
                 {
@@ -52,7 +52,7 @@ namespace MailQueueNet.Grpc
                 }, headers, deadline, cancellationToken);
             }
 
-            public virtual AsyncUnaryCall<MailMessageReply> QueueMailAsyncWithSettings(System.Net.Mail.MailMessage message, MailSettings settings, CallOptions options)
+            public virtual AsyncUnaryCall<MailMessageReply> QueueMailWithSettingsAsync(System.Net.Mail.MailMessage message, MailSettings settings, CallOptions options)
             {
                 return QueueMailWithSettingsAsync(new MailMessageWithSettings
                 {
