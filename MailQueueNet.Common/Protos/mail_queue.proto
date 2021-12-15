@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
+
 option csharp_namespace = "MailQueueNet.Grpc";
 
 package MailQueue;
@@ -14,28 +16,29 @@ service MailGrpcService {
 }
 
 message Settings {
-  oneof opt_queueFolder { string opt_queueFolder_value = 1; };
-  oneof opt_failedFolder { string opt_failedFolder_value = 2; };
+  google.protobuf.StringValue TestV = 6;
+  google.protobuf.StringValue queueFolder = 1;
+  google.protobuf.StringValue failedFolder = 2;
   float secondsUntilFolderRefresh = 3;
   int32 maximumConcurrentWorkers = 4;
   int32 maximumFailureRetries = 5;
 }
 
 message SmtpMailSettings {
-  oneof opt_host { string opt_host_value = 1; };
+  google.protobuf.StringValue host = 1;
   int32 port = 2;
   bool requiresSsl = 3;
   bool requiresAuthentication = 4;
-  oneof opt_username { string opt_username_value = 5; };
-  oneof opt_password { string opt_password_value = 6; };
+  google.protobuf.StringValue username = 5;
+  google.protobuf.StringValue password = 6;
 
   // The number of milliseconds to wait before the request times out. The default value is 100,000 milliseconds (100 seconds).
   int32 connectionTimeout = 7;
 }
 
 message MailgunMailSettings {
-  oneof opt_domain { string opt_domain_value = 1; };
-  oneof opt_apiKey { string opt_apiKey_value = 2; };
+  google.protobuf.StringValue domain = 1;
+  google.protobuf.StringValue apiKey = 2;
 
   // The number of milliseconds to wait before the request times out. The default value is 100,000 milliseconds (100 seconds).
   int32 connectionTimeout = 7;
@@ -49,20 +52,20 @@ message MailSettings {
 }
 
 message MailMessage {
-  oneof opt_body { string opt_body_value = 1; };
-  oneof opt_bodyEncoding { string opt_bodyEncoding_value = 2; };
+  google.protobuf.StringValue body = 1;
+  google.protobuf.StringValue bodyEncoding = 2;
   bool isBodyHtml = 3;
-  oneof opt_subject { string opt_subject_value = 4; };
-  oneof opt_subjectEncoding { string opt_subjectEncoding_value = 5; };
-  oneof opt_headersEncoding { string opt_headersEncoding_value = 6; };
+  google.protobuf.StringValue subject = 4;
+  google.protobuf.StringValue subjectEncoding = 5;
+  google.protobuf.StringValue headersEncoding = 6;
   MailAddress from = 7;
   MailAddress sender = 8;
   repeated MailAddress to = 9;
   repeated MailAddress cc = 10;
   repeated MailAddress bcc = 11;
   repeated MailAddress replyTo = 12;
-  oneof opt_priority { string opt_priority_value = 13; };
-  oneof opt_deliveryNotificationOptions { string opt_deliveryNotificationOptions_value = 14; };
+  google.protobuf.StringValue priority = 13;
+  google.protobuf.StringValue deliveryNotificationOptions = 14;
   repeated Attachment attachments = 15;
   repeated Header headers = 16;
 }
@@ -73,33 +76,33 @@ message MailMessageWithSettings {
 }
 
 message MailAddress {
-  oneof opt_address { string opt_address_value = 1; };
-  oneof opt_displayName { string opt_displayName_value = 2; };
+  google.protobuf.StringValue address = 1;
+  google.protobuf.StringValue displayName = 2;
 }
 
 message Attachment {
-  oneof opt_name { string opt_name_value = 1; };
-  oneof opt_nameEncoding { string opt_nameEncoding_value = 2; };
-  oneof opt_contentId { string opt_contentId_value = 3; };
-  oneof opt_fileName { string opt_fileName_value = 4; };
-  oneof opt_contentType { string opt_contentType_value = 5; };
-  oneof opt_transferEncoding { string opt_transferEncoding_value = 6; };
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue nameEncoding = 2;
+  google.protobuf.StringValue contentId = 3;
+  google.protobuf.StringValue fileName = 4;
+  google.protobuf.StringValue contentType = 5;
+  google.protobuf.StringValue transferEncoding = 6;
   ContentDisposition contentDisposition = 7;
   bool shouldDelete = 8;
 }
 
 message Header {
-  oneof opt_name { string opt_name_value = 1; };
-  oneof opt_value { string opt_value_value = 2; };
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue value = 2;
 }
 
 message ContentDisposition {
-  oneof opt_dispositionType { string opt_dispositionType_value = 1; };
+  google.protobuf.StringValue dispositionType = 1;
   bool inline = 2;
-  oneof opt_fileName { string opt_fileName_value = 3; };
-  oneof opt_creationDate { string opt_creationDate_value = 4; };
-  oneof opt_modificationDate { string opt_modificationDate_value = 5; };
-  oneof opt_readDate { string opt_readDate_value = 6; };
+  google.protobuf.StringValue fileName = 3;
+  google.protobuf.StringValue creationDate = 4;
+  google.protobuf.StringValue modificationDate = 5;
+  google.protobuf.StringValue readDate = 6;
   int64 size = 7;
   map<string,string> params = 8;
 }
