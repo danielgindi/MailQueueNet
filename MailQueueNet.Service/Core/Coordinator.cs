@@ -200,7 +200,7 @@ namespace MailQueueNet.Service.Core
                 catch (FileNotFoundException)
                 {
                     message?.Dispose();
-                    MarkSkipped(fileName);
+                    MarkFailed(fileName, message);
                     return;
                 }
                 
@@ -367,7 +367,7 @@ namespace MailQueueNet.Service.Core
 
         private void MarkSkipped(string fileName)
         {
-            // This is a file that has not failed, but was not sent. This can be when not SMTP server is specified at all, and we are waiting for settings.
+            // This is a file that has not failed, but was not sent. This can be when no SMTP server is specified at all, and we are waiting for settings.
             // So do nothing. This file is not in the cached list, and we will only reach it on the next round and try again.
 
             _sendingFileNames.TryRemove(fileName, out _);
