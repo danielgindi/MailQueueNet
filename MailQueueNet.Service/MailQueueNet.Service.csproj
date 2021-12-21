@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0283E429-85FB-4874-9E32-F16521C091B1}</ProjectGuid>
@@ -31,10 +29,6 @@
     <IsPortable Condition="'$(PublishProfile)' == 'Portable.pubxml'">true</IsPortable>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowedReferenceRelatedFileExtensions>.pdb;.dll.config</AllowedReferenceRelatedFileExtensions>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <DefineConstants>$(DefineConstants);Linux</DefineConstants>
   </PropertyGroup>
@@ -53,11 +47,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\_Debug\Service\</OutputPath>
-    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <OutputPath>..\_Debug\</OutputPath>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -66,10 +58,9 @@
     <Optimize>true</Optimize>
     <OutputPath>..\_Release\Service\</OutputPath>
     <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowedReferenceRelatedFileExtensions>.pdb;.dll.config</AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore.Server" Version="2.41.0" />
