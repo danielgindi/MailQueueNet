@@ -20,7 +20,7 @@ namespace MailQueueNet.Service
                 .UseSystemd()
 #endif
 #if Windows || Portable
-                .UseWindowsService(x => x.ServiceName = "sensor-data.consumer")
+                .UseWindowsService(x => x.ServiceName = "MailQueueNet")
 #endif
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
