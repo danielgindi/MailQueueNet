@@ -199,6 +199,8 @@ namespace MailQueueNet.Service.Core
                 }
                 catch (FileNotFoundException)
                 {
+                    _Logger?.LogWarning($"Failed reading {fileName}, file not found.");
+                    
                     message?.Dispose();
                     MarkFailed(fileName, message);
                     return;
@@ -207,7 +209,9 @@ namespace MailQueueNet.Service.Core
                 Interlocked.Increment(ref _concurrentWorkers);
                 workerInUse = true;
 
-                _Logger?.LogDebug($"Sending {fileName} task to worker");
+                var logDesc = $"To={message.To}, CC={message.CC}, Bcc={message.Bcc}";
+
+                _Logger?.LogDebug($"Sending {fileName} task to worker ({logDesc})");
 
                 if (mailSettings == null || mailSettings.IsEmpty())
                 {
@@ -218,19 +222,19 @@ namespace MailQueueNet.Service.Core
 
                 if (!success)
                 {
-                    _Logger?.LogWarning($"No mail server name, skipping {fileName}");
+                    _Logger?.LogWarning($"No mail server name, skipping {fileName} ({logDesc})");
 
                     message?.Dispose();
                     MarkSkipped(fileName);
                 }
                 else
                 {
-                    _Logger?.LogInformation($"Sent mail for {fileName}");
+                    _Logger?.LogInformation($"Sent mail for {fileName} ({logDesc})");
 
                     MarkSent(fileName, message);
                 }
                 
-                _Logger?.LogTrace($"Releasing worker from {fileName} task");
+                _Logger?.LogTrace($"Releasing worker from {fileName} task ({logDesc})");
 
                 // Task ended, decrement counter and pulse to the Coordinator thread
                 Interlocked.Decrement(ref _concurrentWorkers);
