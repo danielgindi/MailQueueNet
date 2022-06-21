@@ -15,7 +15,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <Copyright>Copyright © Daniel Cohen Gindi (danielgindi@gmail.com) 2014</Copyright>
-    <Version>3.0.6</Version>
+    <Version>3.0.7</Version>
     <PublishSingleFile>false</PublishSingleFile>
     <!-- https://docs.microsoft.com/en-us/dotnet/core/rid-catalog -->
     <RuntimeIdentifiers>win-x64;win10-x64;linux-x64;ubuntu.20.04-x64;osx.11.0-x64</RuntimeIdentifiers>
