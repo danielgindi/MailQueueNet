@@ -387,7 +387,7 @@ namespace MailQueueNet.Service.Core
             _MailSettings = SettingsController.GetMailSettings(_Configuration);
         }
 
-        private int mailIdCounter = 1;
+        private int mailIdCounter = 0;
 
         public void AddMail(Grpc.MailMessage message, Grpc.MailSettings settings = null)
         {
@@ -404,61 +404,48 @@ namespace MailQueueNet.Service.Core
                 catch { }
 
                 bool success = false;
-                string file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + mailIdCounter.ToString().PadLeft(8, '0') + @".mail");
-                while (File.Exists(file))
+                string destPath = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + "_" + Interlocked.Increment(ref mailIdCounter).ToString().PadLeft(8, '0') + ".mail");
+                while (true)
                 {
-                    mailIdCounter++;
-                    file = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + @"_" + mailIdCounter.ToString().PadLeft(8, '0') + @".mail");
+                    var originalSendingState = _sendingFileNames.ContainsKey(destPath);
 
-                    var originalSendingState = _sendingFileNames.ContainsKey(file);
-
-                    try
+                    if (File.Exists(destPath))
                     {
-                        _sendingFileNames[file] = true;
-                        File.Move(tempPath, file);
-                        success = true;
-                        break;
-                    }
-                    catch (DirectoryNotFoundException)
-                    {
-                        break;
-                    }
-                    catch (PathTooLongException)
-                    {
-                        break;
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        break;
-                    }
-                    catch (IOException)
-                    {
+                        destPath = Path.Combine(queuePath, DateTime.Now.ToString(@"yyyyMMddHHmmss") + "_" + Interlocked.Increment(ref mailIdCounter).ToString().PadLeft(8, '0') + ".mail");
                         continue;
                     }
-                    finally
-                    {
-                        if (!originalSendingState)
-                            _sendingFileNames.TryRemove(file, out originalSendingState);
-                    }
-                }
-
-                if (!success)
-                {
-                    var originalSendingState = _sendingFileNames.ContainsKey(file);
-
+                    
                     try
                     {
-                        _sendingFileNames[file] = true;
-                        File.Move(tempPath, file);
+                        _sendingFileNames[destPath] = true;
+                        File.Move(tempPath, destPath, false);
                         success = true;
+                        break;
                     }
-                    catch
+                    catch (DirectoryNotFoundException ex)
                     {
+                        _Logger?.LogError(ex, $"Exception thrown for AddMail");
+                        break;
+                    }
+                    catch (PathTooLongException ex)
+                    {
+                        _Logger?.LogError(ex, $"Exception thrown for AddMail");
+                        break;
+                    }
+                    catch (FileNotFoundException ex)
+                    {
+                        _Logger?.LogError(ex, $"Exception thrown for AddMail");
+                        break;
+                    }
+                    catch (IOException ex)
+                    {
+                        _Logger?.LogError(ex, $"Exception thrown for AddMail");
+                        break;
                     }
                     finally
                     {
                         if (!originalSendingState)
-                            _sendingFileNames.TryRemove(file, out originalSendingState);
+                            _sendingFileNames.TryRemove(destPath, out originalSendingState);
                     }
                 }
 
