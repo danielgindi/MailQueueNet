@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Net.Client" Version="2.41.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.46.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MailQueueNet.Common\MailQueueNet.Common.csproj">
