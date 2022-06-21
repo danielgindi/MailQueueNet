@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Grpc.Core;
 using MailQueueNet.Service.Core;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace MailQueueNet.Service.GrpcServices
 {
@@ -28,8 +29,9 @@ namespace MailQueueNet.Service.GrpcServices
                 _Coordinator.AddMail(request);
                 success = true;
             }
-            catch
+            catch (Exception ex)
             {
+                _Logger?.LogError(ex, $"Exception thrown for QueueMail");
             }
 
             return Task.FromResult(new Grpc.MailMessageReply
@@ -47,8 +49,9 @@ namespace MailQueueNet.Service.GrpcServices
                 _Coordinator.AddMail(request);
                 success = true;
             }
-            catch
+            catch (Exception ex)
             {
+                _Logger?.LogError(ex, $"Exception thrown for QueueMail");
             }
 
             return Task.FromResult(new Grpc.MailMessageReply
