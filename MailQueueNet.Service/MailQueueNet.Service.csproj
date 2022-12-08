@@ -69,7 +69,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.0" Condition="'$(IsLinux)'=='true' Or '$(IsPortable)'=='true'" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" Condition="'$(IsWindows)'=='true' Or '$(IsPortable)'=='true'" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
