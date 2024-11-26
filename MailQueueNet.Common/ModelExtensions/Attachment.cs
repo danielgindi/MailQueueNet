@@ -31,7 +31,7 @@ namespace MailQueueNet.Grpc
                     Size = attachment.ContentDisposition.Size
                 };
 
-                if (attachment.ContentDisposition.ReadDate != DateTime.MinValue)
+                if (attachment.ContentDisposition.CreationDate != DateTime.MinValue)
                     proto.ContentDisposition.CreationDate = attachment.ContentDisposition.CreationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
 
                 if (attachment.ContentDisposition.ModificationDate != DateTime.MinValue)
@@ -42,7 +42,7 @@ namespace MailQueueNet.Grpc
 
                 foreach (string key in attachment.ContentDisposition.Parameters.Keys)
                 {
-                    attachment.ContentDisposition.Parameters[key] = attachment.ContentDisposition.Parameters[key];
+                    proto.ContentDisposition.Params[key] = attachment.ContentDisposition.Parameters[key];
                 }
             }
 
