@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MailQueueNet.Service</RootNamespace>
     <AssemblyName>MailQueueNet.Service</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
@@ -18,7 +18,7 @@
     <Version>3.0.8</Version>
     <PublishSingleFile>false</PublishSingleFile>
     <!-- https://docs.microsoft.com/en-us/dotnet/core/rid-catalog -->
-    <RuntimeIdentifiers>win-x64;win10-x64;linux-x64;ubuntu.20.04-x64;osx.11.0-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     <UseAppHost>true</UseAppHost>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RollForward>LatestMinor</RollForward>
